@@ -130,7 +130,7 @@ public class CubeManager : MonoBehaviour
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], (float)angleToReach);
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], Mathf.Round(angleToReach));
         }
 
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
@@ -159,7 +159,7 @@ public class CubeManager : MonoBehaviour
             VectorX = transform.localPosition[0] - (transform.localScale[0] / 2);
         }
 
-        print(transform.localEulerAngles);
+
 
         VectorZ = transform.localPosition[2];
 
@@ -215,7 +215,7 @@ public class CubeManager : MonoBehaviour
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], (float)angleToReach);
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], Mathf.Round(angleToReach));
         }
 
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
@@ -231,7 +231,7 @@ public class CubeManager : MonoBehaviour
         int currentAngle = (int)transform.localEulerAngles[0];
 
 
-        int angleToReach = currentAngle + 90;
+        int angleToReach = currentAngle - 90;
 
         float VectorX = transform.localPosition[0];
 
@@ -275,11 +275,12 @@ public class CubeManager : MonoBehaviour
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3(0, 0, (float)(angleToReach));
+            transform.localEulerAngles = new Vector3(0, 0, Mathf.Round(angleToReach));
         }
 
         else
         {
+            Debug.Log("Potato");
             while (currentAngle > angleToReach)
             {
                 transform.RotateAround(VectorToUse, new Vector3(-1, 0, 0), 100 * Time.deltaTime);
@@ -288,13 +289,14 @@ public class CubeManager : MonoBehaviour
 
                 if (startEuler != (int)transform.localEulerAngles[2] && startEulerX != 90 && startEulerX != 180 && startEulerX != 270)
                 {
+                    Debug.Log("NANI");
                     break;
                 }
 
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3((float)angleToReach, transform.localEulerAngles[1], transform.localEulerAngles[2]);
+            transform.localEulerAngles = new Vector3(Mathf.Round(angleToReach), transform.localEulerAngles[1], transform.localEulerAngles[2]);
         }
         
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
@@ -353,7 +355,7 @@ public class CubeManager : MonoBehaviour
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3(0, 0, (float)(angleToReach));
+            transform.localEulerAngles = new Vector3(0, 0, Mathf.Round(angleToReach));
         }
 
         else
@@ -372,7 +374,7 @@ public class CubeManager : MonoBehaviour
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3((float)angleToReach, transform.localEulerAngles[1], transform.localEulerAngles[2]);
+            transform.localEulerAngles = new Vector3(Mathf.Round(angleToReach), transform.localEulerAngles[1], transform.localEulerAngles[2]);
         }
         
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
