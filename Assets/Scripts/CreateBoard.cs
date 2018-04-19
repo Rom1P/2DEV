@@ -12,7 +12,7 @@ public class CreateBoard : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        //LoadBoard();
+        LoadBoard();
 	}
 	
 	// Update is called once per frame

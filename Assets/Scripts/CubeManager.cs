@@ -6,83 +6,60 @@ using UnityEngine;
 public class CubeManager : MonoBehaviour
 {
 
-    bool availableToRotate = true;
+    bool availableToRotate;
 
     // Use this for initialization
     void Start()
     {
+        availableToRotate = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-
-
-
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (availableToRotate)
         {
-            if (availableToRotate)
+            if (Input.GetKeyDown(KeyCode.UpArrow))
             {
                 StartCoroutine(RotateForward());
-            };
-        }
+            }
 
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            if (availableToRotate)
+            if (Input.GetKeyDown(KeyCode.Z))
             {
                 StartCoroutine(RotateForward());
-            };
-        }
+            }
 
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            if (availableToRotate)
+            if (Input.GetKeyDown(KeyCode.DownArrow))
             {
                 StartCoroutine(RotateBack());
-            };
-        }
+            }
 
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            if (availableToRotate)
+            if (Input.GetKeyDown(KeyCode.S))
             {
                 StartCoroutine(RotateBack());
-            };
-        }
+            }
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            if (availableToRotate)
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 StartCoroutine(RotateLeft());
             }
-        }
 
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            if (availableToRotate)
+            if (Input.GetKeyDown(KeyCode.Q))
             {
                 StartCoroutine(RotateLeft());
             }
-        }
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            if (availableToRotate)
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                StartCoroutine(RotateRight());
+            }
+
+            if (Input.GetKeyDown(KeyCode.D))
             {
                 StartCoroutine(RotateRight());
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            if (availableToRotate)
-            {
-                StartCoroutine(RotateRight());
-            }
-        }
     }
 
     IEnumerator RotateRight()
@@ -97,26 +74,64 @@ public class CubeManager : MonoBehaviour
         }
 
         int angleToReach = currentAngle - 90;
+        float VectorX;
+        float VectorZ;
 
-        float VectorX = transform.localPosition[0] + (transform.localScale[0] / 2);
-        float VectorZ = transform.localPosition[2] + (transform.localScale[2] / 2);
+        if (Mathf.Round(currentAngle) == 90 || Mathf.Round(currentAngle) == 270)
+        {
+            VectorX = transform.localPosition[0] + (transform.localScale[0]);
+        }
+
+        else
+        {
+            VectorX = transform.localPosition[0] + (transform.localScale[0] / 2);
+        }
+
+
+        VectorZ = transform.localPosition[2];
 
         Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
 
-        while (currentAngle > angleToReach)
+        if ((int)transform.localEulerAngles[0] == 90 || (int)transform.localEulerAngles[0] == 270)
         {
-            transform.RotateAround(VectorToUse, new Vector3(0, 0, -1), 100 * Time.deltaTime);
+            transform.localEulerAngles = new Vector3(0, 90, -90);
 
-            currentAngle = (int)transform.localEulerAngles[2];
+            int startEulerY = (int)transform.localEulerAngles[1];
+            int startEulerZ = (int)transform.localEulerAngles[2];
 
-            Debug.Log(transform.localEulerAngles[2]);
+            angleToReach = 90;
 
-            Debug.Log(currentAngle);
+            currentAngle = 0;
 
-            yield return null;
+            while (currentAngle < angleToReach)
+            {
+
+                transform.RotateAround(VectorToUse, new Vector3(0, 0, -1), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                if (startEulerY != (int)transform.localEulerAngles[1] || startEulerZ != (int)transform.localEulerAngles[2])
+                {
+                    transform.localEulerAngles = new Vector3(Mathf.Round(angleToReach), 90, 90);
+                    break;
+                }
+
+                yield return null;
+            }
         }
 
-        transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], (float)angleToReach);
+
+        else
+        {
+            while (currentAngle > angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(0, 0, -1), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[2];
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], (float)angleToReach);
+        }
 
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
 
@@ -125,49 +140,83 @@ public class CubeManager : MonoBehaviour
 
     IEnumerator RotateLeft()
     {
-
         availableToRotate = false;
 
-        float currentAngle = transform.localEulerAngles[2];
+        int currentAngle = (int)transform.localEulerAngles[2];
 
+        float VectorX;
+        float VectorZ;
 
+        print(currentAngle);
 
+        if (Mathf.Round(currentAngle) == 90 || Mathf.Round(currentAngle) == 270)
+        {
+            VectorX = transform.localPosition[0] - (transform.localScale[0]);
+        }
 
-        float angleToReach = currentAngle + 90;
+        else
+        {
+            VectorX = transform.localPosition[0] - (transform.localScale[0] / 2);
+        }
 
+        print(transform.localEulerAngles);
 
-
-        Debug.Log(currentAngle);
-
-        Debug.Log(angleToReach);
-
-
-
-
-        float VectorX = transform.localPosition[0] - (transform.localScale[0] / 2);
-        float VectorZ = transform.localPosition[2] + (transform.localScale[2] / 2);
+        VectorZ = transform.localPosition[2];
 
         Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
 
-
-
-        while (currentAngle < angleToReach)
+        if ((int)transform.localEulerAngles[0] == 90 || (int)transform.localEulerAngles[0] == 270)
         {
-            transform.RotateAround(VectorToUse, new Vector3(0, 0, 1), 100 * Time.deltaTime);
-
-            currentAngle = (int)transform.localEulerAngles[2];
-
-            if (currentAngle < angleToReach - 90 || currentAngle > angleToReach)
+            if (currentAngle == 0)
             {
-                break;
+                currentAngle = 360;
             }
 
-            yield return null;
+            transform.localEulerAngles = new Vector3(0, 90, -90);
+
+            int startEulerY = (int)transform.localEulerAngles[1];
+            int startEulerZ = (int)transform.localEulerAngles[2];
+            
+            int angleToReach = 90;
+
+            while (currentAngle > angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(0, 0, 1), 100 * Time.deltaTime);
+
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                if (startEulerY != (int)transform.localEulerAngles[1] || startEulerZ != (int)transform.localEulerAngles[2])
+                {
+                    transform.localEulerAngles = new Vector3(Mathf.Round(angleToReach), 90, 90);
+                    break;
+                }
+                
+                yield return null;
+            }
         }
 
 
+        else
+        {
 
-        transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], (float)angleToReach);
+            int angleToReach = currentAngle + 90;
+            
+            while (currentAngle < angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(0, 0, 1), 100 * Time.deltaTime);
+
+                currentAngle = (int)transform.localEulerAngles[2];
+
+                if (currentAngle < angleToReach - 90 || currentAngle > angleToReach)
+                {
+                    break;
+                }
+                
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], (float)angleToReach);
+        }
 
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
 
@@ -181,37 +230,73 @@ public class CubeManager : MonoBehaviour
 
         int currentAngle = (int)transform.localEulerAngles[0];
 
-        if (currentAngle == 0)
-        {
-            currentAngle = 360;
-        }
 
-        Debug.Log(currentAngle);
-
-        int angleToReach = currentAngle - 90;
-
-        Debug.Log(angleToReach);
+        int angleToReach = currentAngle + 90;
 
         float VectorX = transform.localPosition[0];
-        float VectorZ = transform.localPosition[2] - (transform.localScale[2] / 2);
+
+        float VectorZ;
+
+        int startEuler = (int)transform.localEulerAngles[2];
+
+        if (Mathf.Round(currentAngle) == 90 || Mathf.Round(currentAngle) == 270)
+        {
+            VectorZ = transform.localPosition[2] - (transform.localScale[2]);
+        }
+
+        else
+        {
+            VectorZ = transform.localPosition[2] - (transform.localScale[2] / 2);
+        }
 
         Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
 
-        while (currentAngle > angleToReach)
+
+        int startEulerX = (int)transform.localEulerAngles[0];
+
+        if ((int)transform.localEulerAngles[2] == 90 || (int)transform.localEulerAngles[2] == 270)
         {
-            transform.RotateAround(VectorToUse, new Vector3(-1, 0, 0), 100 * Time.deltaTime);
+            transform.localEulerAngles = new Vector3(90, -90, 0);
 
-            currentAngle = (int)transform.localEulerAngles[0];
+            int startEulerY = (int)transform.localEulerAngles[1];
+            int startEulerZ = (int)transform.localEulerAngles[2];
 
-            Debug.Log(transform.localEulerAngles[0]);
 
-            Debug.Log(currentAngle);
+            angleToReach = 90;
 
-            yield return null;
+            currentAngle = 0;
+
+            while (currentAngle < angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(-1, 0, 0), 100 * Time.deltaTime);
+
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(0, 0, (float)(angleToReach));
         }
 
-        transform.localEulerAngles = new Vector3((float)angleToReach, transform.localEulerAngles[1], transform.localEulerAngles[2]);
+        else
+        {
+            while (currentAngle > angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(-1, 0, 0), 100 * Time.deltaTime);
 
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                if (startEuler != (int)transform.localEulerAngles[2] && startEulerX != 90 && startEulerX != 180 && startEulerX != 270)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3((float)angleToReach, transform.localEulerAngles[1], transform.localEulerAngles[2]);
+        }
+        
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
 
         availableToRotate = true;
@@ -219,43 +304,77 @@ public class CubeManager : MonoBehaviour
 
     IEnumerator RotateForward()
     {
-
         availableToRotate = false;
 
         int currentAngle = (int)transform.localEulerAngles[0];
 
-
-
         int angleToReach = currentAngle + 90;
 
-        Debug.Log(angleToReach);
-
         float VectorX = transform.localPosition[0];
-        float VectorZ = transform.localPosition[2] + (transform.localScale[2] / 2);
 
-        Vector3 VectorToUse = new Vector3(5, 0, 10);
+        float VectorZ;
 
-        while (currentAngle < angleToReach)
+        int startEuler = (int)transform.localEulerAngles[2];
+
+        if (Mathf.Round(currentAngle) == 90 || Mathf.Round(currentAngle) == 270)
         {
-            transform.RotateAround(VectorToUse, new Vector3(1, 0, 0), 70 * Time.deltaTime);
+            VectorZ = transform.localPosition[2] + (transform.localScale[2]);
 
-            currentAngle = (int)transform.localEulerAngles[0];
-
-            Debug.Log(transform.localEulerAngles);
-
-            Debug.Log(transform.localEulerAngles[0]);
-
-            if ((int)transform.localEulerAngles[1] == 180 || (int)transform.localEulerAngles[2] == 180)
-            {
-                print("lkkl");
-                break;
-            }
-
-            yield return null;
         }
 
-        transform.localEulerAngles = new Vector3((float)angleToReach, transform.localEulerAngles[1], transform.localEulerAngles[2]);
+        else
+        {
+            VectorZ = transform.localPosition[2] + (transform.localScale[2] / 2);
+        }
 
+        Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
+
+        int startEulerX = (int)transform.localEulerAngles[0];
+
+        if ((int)transform.localEulerAngles[2] == 90 || (int)transform.localEulerAngles[2] == 270)
+        {
+
+            transform.localEulerAngles = new Vector3(90, -90, 0);
+
+            int startEulerY = (int)transform.localEulerAngles[1];
+            int startEulerZ = (int)transform.localEulerAngles[2];
+
+            angleToReach = 90;
+
+            currentAngle = 0;
+
+            while (currentAngle < angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(1, 0, 0), 100 * Time.deltaTime);
+
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(0, 0, (float)(angleToReach));
+        }
+
+        else
+        {
+            while (currentAngle < angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(1, 0, 0), 100 * Time.deltaTime);
+
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                if (startEuler != (int)transform.localEulerAngles[2] && startEulerX != 90 && startEulerX != 180 && startEulerX != 270)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3((float)angleToReach, transform.localEulerAngles[1], transform.localEulerAngles[2]);
+        }
+        
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
 
         availableToRotate = true;
