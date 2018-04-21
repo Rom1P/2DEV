@@ -20,7 +20,7 @@ MonoBehaviour:
   m_ShowMode: 4
   m_Title: 
   m_RootView: {fileID: 6}
-  m_MinSize: {x: 950, y: 300}
+  m_MinSize: {x: 950, y: 392}
   m_MaxSize: {x: 10000, y: 10000}
 --- !u!114 &2
 MonoBehaviour:
@@ -89,8 +89,8 @@ MonoBehaviour:
     y: 0
     width: 379
     height: 597
-  m_MinSize: {x: 202, y: 221}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 14}
   m_Panes:
   - {fileID: 14}
@@ -311,7 +311,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 96270000
     m_LastClickedID: 10134
-    m_ExpandedIDs: 000000007e270000
+    m_ExpandedIDs: 000000007e27000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -364,9 +364,9 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 1e280000
-    m_LastClickedInstanceID: 10270
-    m_HadKeyboardFocusLastEvent: 0
+    m_SelectedInstanceIDs: 20280000
+    m_LastClickedInstanceID: 10272
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -457,23 +457,23 @@ MonoBehaviour:
   m_PersistentViewDataDictionary: {fileID: 0}
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 1e280000
-    m_LastClickedID: 10270
+    m_SelectedIDs: 20280000
+    m_LastClickedID: 10272
     m_ExpandedIDs: 9efbffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: BoardLoader
-      m_OriginalName: BoardLoader
+      m_Name: 
+      m_OriginalName: 
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 10282
+      m_UserData: 0
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 0
+      m_OriginalEventType: 11
       m_IsRenamingFilename: 0
       m_ClientGUIView: {fileID: 4}
     m_SearchString: 
@@ -510,14 +510,14 @@ MonoBehaviour:
     height: 576
   m_PersistentViewDataDictionary: {fileID: 0}
   m_SceneLighting: 1
-  lastFramingTime: 0
+  lastFramingTime: 15114.745051949682
   m_2DMode: 0
   m_isRotationLocked: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 37.059593, y: 29.770979, z: -30.100365}
+    m_Target: {x: 37.321007, y: 8.340157, z: 8.121922}
     speed: 2
-    m_Value: {x: 37.059593, y: 29.770979, z: -30.100365}
+    m_Value: {x: 37.321007, y: 8.340157, z: 8.121922}
   m_RenderMode: 0
   m_ValidateTrueMetals: 0
   m_SceneViewState:
@@ -541,13 +541,13 @@ MonoBehaviour:
       speed: 2
       m_Value: 0
   m_Rotation:
-    m_Target: {x: -0.24378118, y: -0.14195217, z: 0.03609633, w: -0.95870614}
+    m_Target: {x: -0.28824633, y: -0.025848396, z: 0.007784668, w: -0.95717573}
     speed: 2
-    m_Value: {x: -0.24378118, y: -0.14195217, z: 0.03609633, w: -0.95870614}
+    m_Value: {x: -0.28824633, y: -0.025848396, z: 0.007784668, w: -0.95717573}
   m_Size:
-    m_Target: 56.55534
+    m_Target: 75.089386
     speed: 2
-    m_Value: 56.55534
+    m_Value: 75.089386
   m_Ortho:
     m_Target: 0
     speed: 2

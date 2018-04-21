@@ -7,6 +7,7 @@ using UnityEngine;
 public class CreateBoard : MonoBehaviour {
 
     public GameObject CasePrefab;
+    public GameObject EmptyCasePrefab;
 
     public string path;
 
@@ -43,7 +44,7 @@ public class CreateBoard : MonoBehaviour {
             {
                 if(xLine[i].ToString() == "0")
                 {
-                    // Do Nothing yet
+                    Instantiate(EmptyCasePrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
                 }
 
                 else if (xLine[i].ToString() == "1")

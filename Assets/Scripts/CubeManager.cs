@@ -8,6 +8,11 @@ public class CubeManager : MonoBehaviour
 
     bool availableToRotate;
 
+
+
+    Collider m_Collider;
+    Vector3 m_Center;
+    Vector3 m_Size, m_Min, m_Max, boundPoint1, boundPoint2, boundPoint3, boundPoint4, boundPoint5, boundPoint6, boundPoint7, boundPoint8;
     // Use this for initialization
     void Start()
     {
@@ -64,309 +69,416 @@ public class CubeManager : MonoBehaviour
 
     IEnumerator RotateRight()
     {
+
         availableToRotate = false;
 
-        int currentAngle = (int)transform.localEulerAngles[2];
+        int currentAngle;
+        int angleToReach;
 
-        if (currentAngle == 0)
+        if ((int)transform.localEulerAngles[2] == 90 || (int)transform.localEulerAngles[2] == 270)
         {
-            currentAngle = 360;
-        }
 
-        int angleToReach = currentAngle - 90;
-        float VectorX;
-        float VectorZ;
+            /* When Cube is already rotated horizontally (Axis X) */
 
-        if (Mathf.Round(currentAngle) == 90 || Mathf.Round(currentAngle) == 270)
-        {
-            VectorX = transform.localPosition[0] + (transform.localScale[0]);
-        }
+            transform.localEulerAngles = new Vector3(0, 0, 90);
 
-        else
-        {
-            VectorX = transform.localPosition[0] + (transform.localScale[0] / 2);
-        }
+            currentAngle = 90;
+            angleToReach = 0;
 
+            int VectorX;
+            int VectorZ;
 
-        VectorZ = transform.localPosition[2];
+            VectorX = (int)transform.localPosition[0] + (int)(transform.localScale[0]);
+            VectorZ = (int)transform.localPosition[2];
 
-        Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
 
-        if ((int)transform.localEulerAngles[0] == 90 || (int)transform.localEulerAngles[0] == 270)
-        {
-            transform.localEulerAngles = new Vector3(0, 90, -90);
-
-            int startEulerY = (int)transform.localEulerAngles[1];
-            int startEulerZ = (int)transform.localEulerAngles[2];
-
-            angleToReach = 90;
-
-            currentAngle = 0;
-
-            while (currentAngle < angleToReach)
-            {
-
-                transform.RotateAround(VectorToUse, new Vector3(0, 0, -1), 100 * Time.deltaTime);
-                currentAngle = (int)transform.localEulerAngles[0];
-
-                if (startEulerY != (int)transform.localEulerAngles[1] || startEulerZ != (int)transform.localEulerAngles[2])
-                {
-                    transform.localEulerAngles = new Vector3(Mathf.Round(angleToReach), 90, 90);
-                    break;
-                }
-
-                yield return null;
-            }
-        }
-
-
-        else
-        {
             while (currentAngle > angleToReach)
             {
                 transform.RotateAround(VectorToUse, new Vector3(0, 0, -1), 100 * Time.deltaTime);
                 currentAngle = (int)transform.localEulerAngles[2];
 
+                if (currentAngle > angleToReach + 90 || currentAngle < angleToReach)
+                {
+                    break;
+                }
+
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], Mathf.Round(angleToReach));
+
+            transform.localEulerAngles = new Vector3(0, 0, 0);
+        }
+
+        else if ((int)transform.localEulerAngles[0] == 90 || (int)transform.localEulerAngles[0] == 270)
+        {
+
+            /* When Cube is already rotated vertically (Axis Z) */
+
+            transform.localEulerAngles = new Vector3(0, 90, 90);
+
+            currentAngle = 0;
+            angleToReach = 90;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0] + (int)(transform.localScale[0] / 2);
+            VectorZ = (int)transform.localPosition[2];
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
+            while (currentAngle < angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(0, 0, -1), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                if (currentAngle < angleToReach - 90 || currentAngle > angleToReach)
+                {
+                    break;
+                }
+
+                if (transform.localEulerAngles[1] == 270)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(90, 0, 0);
+
+        }
+
+        else
+        {
+
+            /* When Cube is standing up */
+
+            transform.localEulerAngles = new Vector3(0, 0, 0);
+
+            currentAngle = 360;
+            angleToReach = 270;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0] + (int)(transform.localScale[0] / 2);
+            VectorZ = (int)transform.localPosition[2];
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
+            while (currentAngle > angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(0, 0, -1), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[2];
+
+                if (currentAngle > angleToReach + 90 || currentAngle < angleToReach)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(0, 0, 270);
+
         }
 
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
 
         availableToRotate = true;
+
+        gameObject.SendMessage("ReceiveAfterRotate");
     }
 
     IEnumerator RotateLeft()
     {
         availableToRotate = false;
 
-        int currentAngle = (int)transform.localEulerAngles[2];
+        int currentAngle;
+        int angleToReach;
 
-        float VectorX;
-        float VectorZ;
-
-        print(currentAngle);
-
-        if (Mathf.Round(currentAngle) == 90 || Mathf.Round(currentAngle) == 270)
-        {
-            VectorX = transform.localPosition[0] - (transform.localScale[0]);
-        }
-
-        else
-        {
-            VectorX = transform.localPosition[0] - (transform.localScale[0] / 2);
-        }
-
-
-
-        VectorZ = transform.localPosition[2];
-
-        Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
-
-        if ((int)transform.localEulerAngles[0] == 90 || (int)transform.localEulerAngles[0] == 270)
-        {
-            if (currentAngle == 0)
-            {
-                currentAngle = 360;
-            }
-
-            transform.localEulerAngles = new Vector3(0, 90, -90);
-
-            int startEulerY = (int)transform.localEulerAngles[1];
-            int startEulerZ = (int)transform.localEulerAngles[2];
-            
-            int angleToReach = 90;
-
-            while (currentAngle > angleToReach)
-            {
-                transform.RotateAround(VectorToUse, new Vector3(0, 0, 1), 100 * Time.deltaTime);
-
-                currentAngle = (int)transform.localEulerAngles[0];
-
-                if (startEulerY != (int)transform.localEulerAngles[1] || startEulerZ != (int)transform.localEulerAngles[2])
-                {
-                    transform.localEulerAngles = new Vector3(Mathf.Round(angleToReach), 90, 90);
-                    break;
-                }
-                
-                yield return null;
-            }
-        }
-
-
-        else
+        if ((int)transform.localEulerAngles[2] == 90 || (int)transform.localEulerAngles[2] == 270)
         {
 
-            int angleToReach = currentAngle + 90;
-            
+            /* When Cube is already rotated horizontally (Axis X) */
+
+            transform.localEulerAngles = new Vector3(0, 0, -90);
+
+            currentAngle = 270;
+            angleToReach = 360;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0] - (int)(transform.localScale[0]);
+            VectorZ = (int)transform.localPosition[2];
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
             while (currentAngle < angleToReach)
             {
                 transform.RotateAround(VectorToUse, new Vector3(0, 0, 1), 100 * Time.deltaTime);
-
                 currentAngle = (int)transform.localEulerAngles[2];
 
                 if (currentAngle < angleToReach - 90 || currentAngle > angleToReach)
                 {
                     break;
                 }
-                
+
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3(transform.localEulerAngles[0], transform.localEulerAngles[1], Mathf.Round(angleToReach));
+
+            transform.localEulerAngles = new Vector3(0, 0, 0);
+        }
+
+        else if ((int)transform.localEulerAngles[0] == 90 || (int)transform.localEulerAngles[0] == 270)
+        {
+
+            /* When Cube is already rotated vertically (Axis Z) */
+
+            transform.localEulerAngles = new Vector3(0, 90, 90);
+
+            currentAngle = 360;
+            angleToReach = 270;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0] - (int)(transform.localScale[0] / 2);
+            VectorZ = (int)transform.localPosition[2];
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
+            while (currentAngle > angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(0, 0, 1), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                if (currentAngle > angleToReach + 90 || currentAngle < angleToReach)
+                {
+                    break;
+                }
+
+                if (transform.localEulerAngles[1] == 270)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(270, 0, 0);
+
+        }
+
+        else
+        {
+
+            /* When Cube is standing up */
+
+            transform.localEulerAngles = new Vector3(0, 0, 0);
+
+            currentAngle = 0;
+            angleToReach = 90;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0] - (int)(transform.localScale[0] / 2);
+            VectorZ = (int)transform.localPosition[2];
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
+            while (currentAngle < angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(0, 0, 1), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[2];
+
+                if (currentAngle < angleToReach - 90 || currentAngle > angleToReach)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(0, 0, 90);
+
         }
 
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
 
         availableToRotate = true;
+
+        gameObject.SendMessage("ReceiveAfterRotate");
     }
+
+
 
     IEnumerator RotateBack()
     {
 
         availableToRotate = false;
 
-        int currentAngle = (int)transform.localEulerAngles[0];
-
-
-        int angleToReach = currentAngle - 90;
-
-        float VectorX = transform.localPosition[0];
-
-        float VectorZ;
-
-        int startEuler = (int)transform.localEulerAngles[2];
-
-        if (Mathf.Round(currentAngle) == 90 || Mathf.Round(currentAngle) == 270)
-        {
-            VectorZ = transform.localPosition[2] - (transform.localScale[2]);
-        }
-
-        else
-        {
-            VectorZ = transform.localPosition[2] - (transform.localScale[2] / 2);
-        }
-
-        Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
-
-
-        int startEulerX = (int)transform.localEulerAngles[0];
+        int currentAngle;
+        int angleToReach;
 
         if ((int)transform.localEulerAngles[2] == 90 || (int)transform.localEulerAngles[2] == 270)
         {
-            transform.localEulerAngles = new Vector3(90, -90, 0);
 
-            int startEulerY = (int)transform.localEulerAngles[1];
-            int startEulerZ = (int)transform.localEulerAngles[2];
+            /* When Cube is already rotated horizontally (Axis X) */
 
+            transform.localEulerAngles = new Vector3(0, 0, 90);
 
-            angleToReach = 90;
+            currentAngle = 360;
+            angleToReach = 270;
 
-            currentAngle = 0;
+            int VectorX;
+            int VectorZ;
 
-            while (currentAngle < angleToReach)
-            {
-                transform.RotateAround(VectorToUse, new Vector3(-1, 0, 0), 100 * Time.deltaTime);
+            VectorX = (int)transform.localPosition[0];
+            VectorZ = (int)transform.localPosition[2] - (int)(transform.localScale[2] / 2);
 
-                currentAngle = (int)transform.localEulerAngles[0];
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
 
-                yield return null;
-            }
-
-            transform.localEulerAngles = new Vector3(0, 0, Mathf.Round(angleToReach));
-        }
-
-        else
-        {
-            Debug.Log("Potato");
             while (currentAngle > angleToReach)
             {
                 transform.RotateAround(VectorToUse, new Vector3(-1, 0, 0), 100 * Time.deltaTime);
-
                 currentAngle = (int)transform.localEulerAngles[0];
 
-                if (startEuler != (int)transform.localEulerAngles[2] && startEulerX != 90 && startEulerX != 180 && startEulerX != 270)
+                if (currentAngle > angleToReach + 90 || currentAngle < angleToReach)
                 {
-                    Debug.Log("NANI");
                     break;
                 }
 
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3(Mathf.Round(angleToReach), transform.localEulerAngles[1], transform.localEulerAngles[2]);
+
+            transform.localEulerAngles = new Vector3(0, 0, 90);
         }
-        
+
+        else if ((int)transform.localEulerAngles[0] == 90 || (int)transform.localEulerAngles[0] == 270)
+        {
+
+            /* When Cube is already rotated vertically (Axis Z) */
+
+            transform.localEulerAngles = new Vector3(0, 90, 90);
+
+            currentAngle = 0;
+            angleToReach = 90;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0];
+            VectorZ = (int)transform.localPosition[2] - (int)(transform.localScale[2]);
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
+            while (currentAngle < angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(-1, 0, 0), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[2];
+
+                if (currentAngle < angleToReach - 90 || currentAngle > angleToReach)
+                {
+                    break;
+                }
+
+                if (transform.localEulerAngles[1] == 270)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(0, 0, 0);
+
+        }
+
+        else
+        {
+
+            /* When Cube is standing up */
+
+            transform.localEulerAngles = new Vector3(0, 0, 0);
+
+            currentAngle = 360;
+            angleToReach = 270;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0];
+            VectorZ = (int)transform.localPosition[2] - (int)(transform.localScale[2] / 2);
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
+            while (currentAngle > angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(-1, 0, 0), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                if (currentAngle > angleToReach + 90 || currentAngle < angleToReach)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(270, 0, 0);
+
+        }
+
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
 
         availableToRotate = true;
-    }
 
+        gameObject.SendMessage("ReceiveAfterRotate");
+
+    }
     IEnumerator RotateForward()
     {
         availableToRotate = false;
 
-        int currentAngle = (int)transform.localEulerAngles[0];
-
-        int angleToReach = currentAngle + 90;
-
-        float VectorX = transform.localPosition[0];
-
-        float VectorZ;
-
-        int startEuler = (int)transform.localEulerAngles[2];
-
-        if (Mathf.Round(currentAngle) == 90 || Mathf.Round(currentAngle) == 270)
-        {
-            VectorZ = transform.localPosition[2] + (transform.localScale[2]);
-
-        }
-
-        else
-        {
-            VectorZ = transform.localPosition[2] + (transform.localScale[2] / 2);
-        }
-
-        Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
-
-
-        int startEulerX = (int)transform.localEulerAngles[0];
+        int currentAngle;
+        int angleToReach;
 
         if ((int)transform.localEulerAngles[2] == 90 || (int)transform.localEulerAngles[2] == 270)
         {
 
-            transform.localEulerAngles = new Vector3(90, -90, 0);
+            /* When Cube is already rotated horizontally (Axis X) */
 
-            int startEulerY = (int)transform.localEulerAngles[1];
-            int startEulerZ = (int)transform.localEulerAngles[2];
-
-            angleToReach = 90;
+            transform.localEulerAngles = new Vector3(0, 0, 90);
 
             currentAngle = 0;
+            angleToReach = 90;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0];
+            VectorZ = (int)transform.localPosition[2] + (int)(transform.localScale[2] / 2);
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
 
             while (currentAngle < angleToReach)
             {
                 transform.RotateAround(VectorToUse, new Vector3(1, 0, 0), 100 * Time.deltaTime);
-
                 currentAngle = (int)transform.localEulerAngles[0];
 
-                yield return null;
-            }
+                if (currentAngle < angleToReach - 90 || currentAngle > angleToReach)
+                {
+                    break;
+                }
 
-            transform.localEulerAngles = new Vector3(0, 0, Mathf.Round(angleToReach));
-        }
-
-        else
-        {
-            while (currentAngle < angleToReach)
-            {
-                transform.RotateAround(VectorToUse, new Vector3(1, 0, 0), 100 * Time.deltaTime);
-
-                currentAngle = (int)transform.localEulerAngles[0];
-
-                if (startEuler != (int)transform.localEulerAngles[2] && startEulerX != 90 && startEulerX != 180 && startEulerX != 270)
+                if (transform.localEulerAngles[1] == 270 || transform.localEulerAngles[2] != 90)
                 {
                     break;
                 }
@@ -374,12 +486,97 @@ public class CubeManager : MonoBehaviour
                 yield return null;
             }
 
-            transform.localEulerAngles = new Vector3(Mathf.Round(angleToReach), transform.localEulerAngles[1], transform.localEulerAngles[2]);
+
+            transform.localEulerAngles = new Vector3(0, 0, 90);
         }
-        
+
+        else if ((int)transform.localEulerAngles[0] == 90 || (int)transform.localEulerAngles[0] == 270)
+        {
+
+            /* When Cube is already rotated vertically (Axis Z) */
+
+            transform.localEulerAngles = new Vector3(0, 90, 90);
+
+            currentAngle = 90;
+            angleToReach = 180;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0];
+            VectorZ = (int)transform.localPosition[2] + (int)(transform.localScale[2]);
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
+            while (currentAngle < angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(1, 0, 0), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[2];
+                
+                if (currentAngle < angleToReach - 90 || currentAngle > angleToReach)
+                {
+                    break;
+                }
+
+                if (transform.localEulerAngles[1] == 270)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(0, 0, 0);
+
+        }
+
+        else
+        {
+
+            /* When Cube is standing up */
+
+            transform.localEulerAngles = new Vector3(0, 0, 0);
+
+            currentAngle = 0;
+            angleToReach = 90;
+
+            int VectorX;
+            int VectorZ;
+
+            VectorX = (int)transform.localPosition[0];
+            VectorZ = (int)transform.localPosition[2] + (int)(transform.localScale[2] / 2);
+
+            Vector3 VectorToUse = new Vector3(VectorX, 0, VectorZ);
+
+            while (currentAngle < angleToReach)
+            {
+                transform.RotateAround(VectorToUse, new Vector3(1, 0, 0), 100 * Time.deltaTime);
+                currentAngle = (int)transform.localEulerAngles[0];
+
+                if (currentAngle < angleToReach - 90 || currentAngle > angleToReach)
+                {
+                    break;
+                }
+
+
+                if (transform.localEulerAngles[1] != 0)
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+
+            transform.localEulerAngles = new Vector3(270, 0, 0);
+
+        }
+
         transform.localPosition = new Vector3(Mathf.Round(transform.localPosition[0]), Mathf.Round(transform.localPosition[1]), Mathf.Round(transform.localPosition[2]));
 
         availableToRotate = true;
+
+        gameObject.SendMessage("ReceiveAfterRotate");
+
     }
 
 }
