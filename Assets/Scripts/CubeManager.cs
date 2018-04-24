@@ -8,11 +8,8 @@ public class CubeManager : MonoBehaviour
 
     bool availableToRotate;
 
+    public GameObject GameManager;
 
-
-    Collider m_Collider;
-    Vector3 m_Center;
-    Vector3 m_Size, m_Min, m_Max, boundPoint1, boundPoint2, boundPoint3, boundPoint4, boundPoint5, boundPoint6, boundPoint7, boundPoint8;
     // Use this for initialization
     void Start()
     {
@@ -189,7 +186,7 @@ public class CubeManager : MonoBehaviour
 
         availableToRotate = true;
 
-        gameObject.SendMessage("ReceiveAfterRotate");
+        GameManager.SendMessage("ReceiveAfterRotate");
     }
 
     IEnumerator RotateLeft()
@@ -313,7 +310,7 @@ public class CubeManager : MonoBehaviour
 
         availableToRotate = true;
 
-        gameObject.SendMessage("ReceiveAfterRotate");
+        GameManager.SendMessage("ReceiveAfterRotate");
     }
 
 
@@ -440,7 +437,7 @@ public class CubeManager : MonoBehaviour
 
         availableToRotate = true;
 
-        gameObject.SendMessage("ReceiveAfterRotate");
+        GameManager.SendMessage("ReceiveAfterRotate");
 
     }
     IEnumerator RotateForward()
@@ -575,7 +572,7 @@ public class CubeManager : MonoBehaviour
 
         availableToRotate = true;
 
-        gameObject.SendMessage("ReceiveAfterRotate");
+        GameManager.SendMessage("ReceiveAfterRotate");
 
     }
 

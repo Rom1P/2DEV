@@ -8,12 +8,15 @@ public class CreateBoard : MonoBehaviour {
 
     public GameObject CasePrefab;
     public GameObject EmptyCasePrefab;
+    public GameObject ArrivalCasePrefab;
+    public GameObject CubeGame;
 
-    public string path;
 
-	// Use this for initialization
-	void Start () {
-        LoadBoard();
+
+
+    // Use this for initialization
+    void Start () {
+
 	}
 	
 	// Update is called once per frame
@@ -21,7 +24,7 @@ public class CreateBoard : MonoBehaviour {
 		
 	}
 
-    void LoadBoard()
+    void LoadBoard(string path)
     {
 
         float ScaleX = CasePrefab.transform.localScale[0];
@@ -31,8 +34,9 @@ public class CreateBoard : MonoBehaviour {
         float IndexX = ScaleX / 2;
         float IndexY = ScaleY / 2;
         float IndexZ = ScaleZ / 2;
+        
 
-        path = "Assets\\Levels\\LevelTest.txt";
+        
         string readText = File.ReadAllText(path);
 
         string[] xLines = Regex.Split(readText, "\n");
@@ -50,6 +54,18 @@ public class CreateBoard : MonoBehaviour {
                 else if (xLine[i].ToString() == "1")
                 {
                     Instantiate(CasePrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
+                }
+
+                else if (xLine[i].ToString() == "2")
+                {
+                    CubeGame.transform.localPosition = new Vector3(IndexX, CubeGame.transform.localScale[1]/2, IndexZ);
+                }
+
+                else if (xLine[i].ToString() == "3")
+                {
+                    Instantiate(ArrivalCasePrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
+                    GameObject GameManager = GameObject.Find("GameManager");
+                    GameManager.SendMessage("ReceiveArrivalPoint", new Vector3(IndexX, IndexY, IndexZ));
                 }
 
 
