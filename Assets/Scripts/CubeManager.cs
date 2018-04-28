@@ -313,8 +313,6 @@ public class CubeManager : MonoBehaviour
         GameManager.SendMessage("ReceiveAfterRotate");
     }
 
-
-
     IEnumerator RotateBack()
     {
 
@@ -440,6 +438,7 @@ public class CubeManager : MonoBehaviour
         GameManager.SendMessage("ReceiveAfterRotate");
 
     }
+
     IEnumerator RotateForward()
     {
         availableToRotate = false;
@@ -573,6 +572,12 @@ public class CubeManager : MonoBehaviour
         availableToRotate = true;
 
         GameManager.SendMessage("ReceiveAfterRotate");
+
+    }
+
+    void Loose()
+    {
+        availableToRotate = false;
 
     }
 

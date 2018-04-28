@@ -1,0 +1,11 @@
+{
+    "Name": "LevelTest",
+    "Number": 1,
+    "ListBridges" : [
+      "N1(4,2)-[(2,4);(2,5);(2,6)]"
+    ],
+    "SpawnX":2,
+    "SpawnZ":2,
+    "timer" : 70
+        
+  }

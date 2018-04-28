@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -6,12 +7,16 @@ using UnityEngine;
 
 public class CreateBoard : MonoBehaviour {
 
-    public GameObject CasePrefab;
+    public GameObject WoodCasePrefab;
+    public GameObject BrickCasePrefab;
+    public GameObject NormalSwitchPrefab;
+    public GameObject StrongSwitchPrefab;
     public GameObject EmptyCasePrefab;
     public GameObject ArrivalCasePrefab;
     public GameObject CubeGame;
 
-
+    private List<GameObject> CaseBridgeList = new List<GameObject>();
+      
 
 
     // Use this for initialization
@@ -27,12 +32,12 @@ public class CreateBoard : MonoBehaviour {
     void LoadBoard(string path)
     {
 
-        float ScaleX = CasePrefab.transform.localScale[0];
-        float ScaleY = CasePrefab.transform.localScale[1];
-        float ScaleZ = CasePrefab.transform.localScale[2];
+        float ScaleX = WoodCasePrefab.transform.localScale[0];
+        float ScaleY = WoodCasePrefab.transform.localScale[1];
+        float ScaleZ = WoodCasePrefab.transform.localScale[2];
 
         float IndexX = ScaleX / 2;
-        float IndexY = ScaleY / 2;
+        float IndexY = -(ScaleY / 2);
         float IndexZ = ScaleZ / 2;
         
 
@@ -53,20 +58,31 @@ public class CreateBoard : MonoBehaviour {
 
                 else if (xLine[i].ToString() == "1")
                 {
-                    Instantiate(CasePrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
+                    Instantiate(BrickCasePrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
                 }
 
                 else if (xLine[i].ToString() == "2")
                 {
-                    CubeGame.transform.localPosition = new Vector3(IndexX, CubeGame.transform.localScale[1]/2, IndexZ);
+                    Instantiate(WoodCasePrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
                 }
 
-                else if (xLine[i].ToString() == "3")
+                else if (xLine[i].ToString() == "5")
+                {
+                    Instantiate(NormalSwitchPrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
+                }
+
+                else if (xLine[i].ToString() == "6")
+                {
+                    Instantiate(StrongSwitchPrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
+                }
+
+                else if (xLine[i].ToString() == "9")
                 {
                     Instantiate(ArrivalCasePrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
-                    GameObject GameManager = GameObject.Find("GameManager");
-                    GameManager.SendMessage("ReceiveArrivalPoint", new Vector3(IndexX, IndexY, IndexZ));
                 }
+
+
+
 
 
                 IndexX += ScaleX;
@@ -74,10 +90,7 @@ public class CreateBoard : MonoBehaviour {
 
             IndexZ += ScaleZ;
         }
-
-
-
-        
         
     }
+    
 }
