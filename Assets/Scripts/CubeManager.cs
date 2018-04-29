@@ -578,7 +578,11 @@ public class CubeManager : MonoBehaviour
     void Loose()
     {
         availableToRotate = false;
+    }
 
+    void Restart()
+    {
+        availableToRotate = true;
     }
 
 }

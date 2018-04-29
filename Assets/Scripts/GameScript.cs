@@ -5,6 +5,7 @@ using System;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameScript : MonoBehaviour
 {
@@ -43,11 +44,9 @@ public class GameScript : MonoBehaviour
 
     GameObject BoardLoaderObject;
 
-    
+    private new Dictionary<string, List<GameObject>> NormalSwitches;
+    private new Dictionary<string, List<GameObject>> StrongSwitches;
 
-    private new Dictionary<string, List<GameObject>> NormalSwitches = new Dictionary<string, List<GameObject>>();
-    private new Dictionary<string, List<GameObject>> StrongSwitches = new Dictionary<string, List<GameObject>>();
-    
     int Moves;
 
     GameDataEditor loadedData;
@@ -58,13 +57,33 @@ public class GameScript : MonoBehaviour
 
     private float timerGame;
 
-    private bool inGame = true;
+    private bool inGame;
 
     public Text TimerText;
+
+    public GameObject LooseButtons;
+    public GameObject WinButtons;
+
+    public string sequence;
+
+    /* Buttons */
+
+    public GameObject ButtonRetryLoose;
+    public GameObject ButtonMenuLoose;
+    public GameObject ButtonQuitLoose;
+    public GameObject ButtonNextWin;
+    public GameObject ButtonMenuWin;
+    public GameObject ButtonQuitWin;
+
+    private string CompletePath;
+
+    SequenceDataEditor sequenceData;
+
 
     // Use this for initialization
     void Start()
     {
+
 
         try
         {
@@ -76,27 +95,33 @@ public class GameScript : MonoBehaviour
 
             withTimer = MenuManagerAccess.ToggleTimerIsOn;
 
-            
-            
+
+            sequence = MenuManagerAccess.sequence;
 
             Destroy(GameManagerObject);
         }
 
         catch
         {
-            NameFile = "LevelTest";
 
+            NameFile = "Level1";
+            sequence = "Normal";
             withTimer = false;
         }
 
+        inGame = true;
+
+        string DataJson = File.ReadAllText("Assets\\Levels\\" + sequence + "\\sequenceData.json");
+
+        sequenceData = JsonUtility.FromJson<SequenceDataEditor>(DataJson);
 
         TextNameLevel.GetComponentInChildren<Text>().text = NameFile;
 
 
 
-        string CompletePath = "Assets\\Levels\\" + NameFile + ".txt";
+        CompletePath = "Assets\\Levels\\" + sequence + "\\" + NameFile + ".txt";
 
-        string DataPath = "Assets\\Levels\\" + NameFile + ".json";
+        string DataPath = "Assets\\Levels\\" + sequence + "\\" + NameFile + ".json";
 
 
         string readText = File.ReadAllText(CompletePath);
@@ -106,11 +131,19 @@ public class GameScript : MonoBehaviour
         BoardLoaderObject = GameObject.Find("BoardLoader");
         BoardLoaderObject.SendMessage("LoadBoard", CompletePath);
 
+        NormalSwitches = new Dictionary<string, List<GameObject>>();
+        StrongSwitches = new Dictionary<string, List<GameObject>>();
 
-        string DataJson = File.ReadAllText(DataPath);
+        AddButtonsListener();
 
-        loadedData = JsonUtility.FromJson<GameDataEditor>(DataJson);
+
+
+        string jsonString = File.ReadAllText(DataPath);
+
+        loadedData = JsonUtility.FromJson<GameDataEditor>(jsonString);
         LoadData();
+
+        timeElapsed = 0;
 
         if (withTimer)
         {
@@ -118,7 +151,7 @@ public class GameScript : MonoBehaviour
         }
 
         Moves = 0;
-        
+
 
     }
 
@@ -151,12 +184,48 @@ public class GameScript : MonoBehaviour
                 TextToDisplay += " / " + minutesTimer.ToString() + ":" + secondesTimer.ToString();
             }
 
-            TimerText.GetComponent<Text>().text = TextToDisplay;
+            try
+            {
+                TimerText.GetComponent<Text>().text = TextToDisplay;
+            }
+
+            catch
+            {
+
+            }
+
         }
 
-        
+
     }
 
+    void AddButtonsListener()
+    {
+        /* Retry */
+        Button RetryButtonLoose = ButtonRetryLoose.GetComponent<Button>();
+        RetryButtonLoose.onClick.AddListener(RestartLevel);
+
+        /* Menu */
+        Button MenuButtonLoose = ButtonMenuLoose.GetComponent<Button>();
+        MenuButtonLoose.onClick.AddListener(GoMenu);
+
+        /* Quit */
+        Button QuitButtonLoose = ButtonQuitLoose.GetComponent<Button>();
+        QuitButtonLoose.onClick.AddListener(QuitGame);
+
+        /* Next */
+        Button NextButtonWin = ButtonNextWin.GetComponent<Button>();
+        NextButtonWin.onClick.AddListener(NextLevel);
+
+        /* Menu */
+        Button MenuButtonWin = ButtonMenuWin.GetComponent<Button>();
+        MenuButtonWin.onClick.AddListener(GoMenu);
+
+        /* Quit */
+        Button QuitButtonWin = ButtonQuitWin.GetComponent<Button>();
+        QuitButtonWin.onClick.AddListener(QuitGame);
+
+    }
 
     void ReceiveAfterRotate()
     {
@@ -185,7 +254,6 @@ public class GameScript : MonoBehaviour
                 string CaseValue1 = BoardList[CurrentLine][CurrentColumn].ToString();
                 string CaseValue2 = BoardList[CurrentLine][CurrentColumn + 1].ToString();
 
-                
 
                 if ((CaseValue1 == "1" || CaseValue1 == "2" || CaseValue1 == "3" || CaseValue1 == "4" || CaseValue1 == "5" || CaseValue1 == "6") && (CaseValue2 == "1" || CaseValue2 == "2" || CaseValue2 == "3" || CaseValue2 == "4" || CaseValue2 == "5" || CaseValue2 == "6"))
                 {
@@ -196,7 +264,7 @@ public class GameScript : MonoBehaviour
 
 
                         string keyList = (CurrentColumn + 1).ToString() + "," + (CurrentLine + 1).ToString();
-                        
+
 
                         CaseBridgeList = NormalSwitches[keyList];
 
@@ -224,10 +292,6 @@ public class GameScript : MonoBehaviour
 
                         string keyList = (CurrentColumn + 2).ToString() + "," + (CurrentLine + 1).ToString();
 
-
-
-                        
-
                         CaseBridgeList = NormalSwitches[keyList];
 
 
@@ -248,7 +312,6 @@ public class GameScript : MonoBehaviour
                 }
 
 
-
                 else
                 {
                     LoosingProtocol();
@@ -256,10 +319,8 @@ public class GameScript : MonoBehaviour
                 }
             }
 
-            catch (Exception e)
+            catch
             {
-                Debug.Log("NANI");
-                Debug.Log(e);
                 LoosingProtocol();
             }
 
@@ -291,7 +352,7 @@ public class GameScript : MonoBehaviour
                 if ((CaseValue1 == "1" || CaseValue1 == "2" || CaseValue1 == "3" || CaseValue1 == "4" || CaseValue1 == "5" || CaseValue1 == "6") && (CaseValue2 == "1" || CaseValue2 == "2" || CaseValue2 == "3" || CaseValue2 == "4" || CaseValue2 == "5" || CaseValue2 == "6"))
                 {
                     /* Bridge */
-                    if(CaseValue1 == "5")
+                    if (CaseValue1 == "5")
                     {
                         List<GameObject> CaseBridgeList = new List<GameObject>();
 
@@ -349,7 +410,7 @@ public class GameScript : MonoBehaviour
                 {
                     LoosingProtocol();
                 }
-                
+
             }
 
             catch
@@ -393,7 +454,7 @@ public class GameScript : MonoBehaviour
                     LoosingProtocol();
                 }
 
-                if (CaseValue == "2" || CaseValue =="4")
+                if (CaseValue == "2" || CaseValue == "4")
                 {
                     /* Wood Case*/
 
@@ -404,14 +465,14 @@ public class GameScript : MonoBehaviour
                 if (CaseValue == "5")
                 {
                     List<GameObject> CaseBridgeList = new List<GameObject>();
-                    
 
-                    string keyList = (CurrentColumn+1).ToString() + ","+ (CurrentLine + 1).ToString();
-                    
+
+                    string keyList = (CurrentColumn + 1).ToString() + "," + (CurrentLine + 1).ToString();
+
 
                     CaseBridgeList = NormalSwitches[keyList];
-                    
-                    
+
+
                     for (var i = 0; i < CaseBridgeList.Count; i++)
                     {
                         if (!CaseBridgeList[i].activeSelf)
@@ -423,7 +484,7 @@ public class GameScript : MonoBehaviour
                         {
                             CaseBridgeList[i].SetActive(false);
                         }
-                        
+
                     }
 
                 }
@@ -476,7 +537,6 @@ public class GameScript : MonoBehaviour
 
     }
 
-
     void LoadData()
     {
 
@@ -520,18 +580,18 @@ public class GameScript : MonoBehaviour
             string Coord = SplitsData[0];
             int indexTemp = Coord.IndexOf("(") + 1;
             string RawCoord = Coord.Substring(indexTemp, Coord.Length - indexTemp - 1);
-            
+
 
             string[] SplitsCoord = RawCoord.Split(',');
 
             indexXSwitch = Int32.Parse(SplitsCoord[0]);
             indexZSwitch = Int32.Parse(SplitsCoord[1]);
-            
+
 
             string ListCaseBridge = SplitsData[1];
 
             ListCaseBridge = ListCaseBridge.Substring(1, ListCaseBridge.Length - 2);
-            
+
 
             string[] SplitsCoordData = ListCaseBridge.Split(';');
 
@@ -553,8 +613,8 @@ public class GameScript : MonoBehaviour
                 indexXCase = Int32.Parse(SplitCoordCase[0]);
                 indexZCase = Int32.Parse(SplitCoordCase[1]);
 
-                
-                
+
+
                 float ScaleY = WoodCasePrefab.transform.localScale[1];
                 float IndexY = -(ScaleY / 2);
 
@@ -591,15 +651,25 @@ public class GameScript : MonoBehaviour
 
             string CoordSwitchForList = indexXSwitch.ToString() + "," + indexZSwitch.ToString();
 
-            if (SwitchToLoadNormal)
+            try
             {
-                NormalSwitches.Add(CoordSwitchForList, CaseBridgeTemp);
+                if (SwitchToLoadNormal)
+                {
+                    NormalSwitches.Add(CoordSwitchForList, CaseBridgeTemp);
+                }
+
+                else
+                {
+                    StrongSwitches.Add(CoordSwitchForList, CaseBridgeTemp);
+                }
             }
 
-            else
+            catch
             {
-                StrongSwitches.Add(CoordSwitchForList, CaseBridgeTemp);
+
             }
+
+
 
 
 
@@ -615,6 +685,8 @@ public class GameScript : MonoBehaviour
         inGame = false;
         CubeGame.SendMessage("Loose");
 
+        LooseButtons.SetActive(true);
+
         Collider CubeCollider = CubeGame.GetComponent<Collider>();
         CubeCollider.isTrigger = false;
         CubeCollider.attachedRigidbody.useGravity = true;
@@ -623,27 +695,212 @@ public class GameScript : MonoBehaviour
 
     void WinProtocol()
     {
-        Debug.Log("U Win");
+
         inGame = false;
+        List<String> CurrentProgress = sequenceData.LevelProgress;
+
+        SequenceDataEditor SaveProgress = new SequenceDataEditor();
+        SaveProgress.ListLevels = sequenceData.ListLevels;
+        SaveProgress.LevelProgress = CurrentProgress;
+        SaveProgress.Moves = sequenceData.Moves + Moves;
+        SaveProgress.Time = sequenceData.Time + (int)timeElapsed;
+
+
+        string SaveProgressString = JsonUtility.ToJson(SaveProgress);
+
+        File.WriteAllText("Assets\\Levels\\" + sequence + "\\sequenceData.json", SaveProgressString);
+
+        string DataReloadJson = File.ReadAllText("Assets\\Levels\\" + sequence + "\\sequenceData.json");
+
+        sequenceData = JsonUtility.FromJson<SequenceDataEditor>(DataReloadJson);
+
+        if (CurrentProgress.Count == sequenceData.ListLevels.Count)
+        {
+            SceneManager.LoadScene("SaveScore", LoadSceneMode.Single);
+        }
+
+        else
+        {
+            Debug.Log("U Win");
+            CubeGame.SendMessage("Loose");
+
+            WinButtons.SetActive(true);
+
+            Collider CubeCollider = CubeGame.GetComponent<Collider>();
+            CubeCollider.isTrigger = false;
+            CubeCollider.attachedRigidbody.useGravity = true;
+        }
     }
 
     void SetSpawnPoint()
     {
         float postionX;
         float postionZ;
-                
-        postionX = (loadedData.SpawnX * CubeGame.transform.localScale[0]) - (CubeGame.transform.localScale[0]/2);
-        postionZ = (loadedData.SpawnZ * CubeGame.transform.localScale[2]) - (CubeGame.transform.localScale[2]/2);
 
-        CubeGame.transform.localPosition = new Vector3(postionX, CubeGame.transform.localScale[1]/2, postionZ);
+        postionX = (loadedData.SpawnX * CubeGame.transform.localScale[0]) - (CubeGame.transform.localScale[0] / 2);
+        postionZ = (loadedData.SpawnZ * CubeGame.transform.localScale[2]) - (CubeGame.transform.localScale[2] / 2);
+
+        CubeGame.transform.localPosition = new Vector3(postionX, CubeGame.transform.localScale[1] / 2, postionZ);
+        CubeGame.transform.localEulerAngles = new Vector3(0, 0, 0);
     }
 
     void UseTimer()
     {
-        Debug.Log("Timer Launched");
         timerGame = loadedData.timer;
+    }
+
+    void GoMenu()
+    {
+        SceneManager.LoadScene("Menu", LoadSceneMode.Single);
+    }
+
+    void RestartLevel()
+    {
+        GameObject[] gameObjects;
+
+        gameObjects = GameObject.FindGameObjectsWithTag("ToDestroy");
+
+        for (var i = 0; i < gameObjects.Length; i++)
+        {
+            Destroy(gameObjects[i]);
+        }
+
+
+        inGame = true;
+
+        NormalSwitches = new Dictionary<string, List<GameObject>>();
+        StrongSwitches = new Dictionary<string, List<GameObject>>();
+
+        LooseButtons.SetActive(false);
+
+        Collider CubeCollider = CubeGame.GetComponent<Collider>();
+        CubeCollider.isTrigger = true;
+        CubeCollider.attachedRigidbody.useGravity = false;
+
+        Rigidbody rigidbodyCube = CubeGame.GetComponent<Rigidbody>();
+
+        rigidbodyCube.velocity = Vector3.zero;
+        rigidbodyCube.angularVelocity = Vector3.zero;
+
+
+        SetSpawnPoint();
+
+        CubeGame.SendMessage("Restart");
+
+        BoardLoaderObject.SendMessage("LoadBoard", CompletePath);
+
+        LoadData();
+
+        timeElapsed = 0;
+
+        Moves = 0;
+
+    }
+
+    void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    void NextLevel()
+    {
+
+
+        GameObject[] gameObjects;
+
+        gameObjects = GameObject.FindGameObjectsWithTag("ToDestroy");
+
+        for (var i = 0; i < gameObjects.Length; i++)
+        {
+            Destroy(gameObjects[i]);
+        }
+
+        inGame = true;
+
+
+        CubeGame.SendMessage("Restart");
+
+        WinButtons.SetActive(false);
+
+        Collider CubeCollider = CubeGame.GetComponent<Collider>();
+        CubeCollider.isTrigger = true;
+        CubeCollider.attachedRigidbody.useGravity = false;
+
+        Rigidbody rigidbodyCube = CubeGame.GetComponent<Rigidbody>();
+
+        rigidbodyCube.velocity = Vector3.zero;
+        rigidbodyCube.angularVelocity = Vector3.zero;
+
+
+
+        List<String> CurrentProgress = sequenceData.LevelProgress;
+        
+
+        CurrentProgress.Add(sequenceData.ListLevels[CurrentProgress.Count]);
+
+
+        SequenceDataEditor SaveProgress = new SequenceDataEditor();
+        SaveProgress.ListLevels = sequenceData.ListLevels;
+        SaveProgress.LevelProgress = CurrentProgress;
+        SaveProgress.Moves = sequenceData.Moves;
+        SaveProgress.Time = sequenceData.Time;
+
+
+        string SaveProgressString = JsonUtility.ToJson(SaveProgress);
+
+        File.WriteAllText("Assets\\Levels\\" + sequence + "\\sequenceData.json", SaveProgressString);
+
+        NameFile = CurrentProgress[CurrentProgress.Count - 1];
+
+
+        TextNameLevel.GetComponentInChildren<Text>().text = NameFile;
+
+
+
+        CompletePath = "Assets\\Levels\\" + sequence + "\\" + NameFile + ".txt";
+
+        string DataPath = "Assets\\Levels\\" + sequence + "\\" + NameFile + ".json";
+
+
+        string readText = File.ReadAllText(CompletePath);
+
+        BoardList = Regex.Split(readText, "\n");
+
+        BoardLoaderObject = GameObject.Find("BoardLoader");
+        BoardLoaderObject.SendMessage("LoadBoard", CompletePath);
+
+        NormalSwitches = new Dictionary<string, List<GameObject>>();
+        StrongSwitches = new Dictionary<string, List<GameObject>>();
+
+
+        string DataJson2 = File.ReadAllText(DataPath);
+
+        loadedData = JsonUtility.FromJson<GameDataEditor>(DataJson2);
+        LoadData();
+
+
+        string DataReloadJson = File.ReadAllText("Assets\\Levels\\" + sequence + "\\sequenceData.json");
+
+        sequenceData = JsonUtility.FromJson<SequenceDataEditor>(DataReloadJson);
+
+        timeElapsed = 0;
+
+        if (withTimer)
+        {
+            UseTimer();
+        }
+
+        Moves = 0;
+
 
 
     }
-    
+
+    void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
+
+
+
 }

@@ -8,6 +8,7 @@ TagManager:
   - BrickCase
   - WoodCase
   - BridgeCase
+  - ToDestroy
   layers:
   - Default
   - TransparentFX

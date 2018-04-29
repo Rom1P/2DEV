@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 90ab08d424db22044ad5488e0d03ba39
+  - enabled: 1
     path: Assets/Scenes/Menu.unity
     guid: 9740b56a5f6576f418bcb4c8c03cdc68
   - enabled: 1
@@ -14,3 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LevelEditor.unity
     guid: 9b607d7366c48384da9da67f4547ee93
+  - enabled: 1
+    path: Assets/Scenes/Scores.unity
+    guid: 364ad4fbe63e3bf418a7c177144ae682
+  - enabled: 1
+    path: Assets/Scenes/SaveScore.unity
+    guid: 59bd1cc625c4ed94e94e42d146a0da73

@@ -287,11 +287,25 @@
     <Compile Include="Assets\Scripts\CubeManager.cs" />
     <Compile Include="Assets\Scripts\GameDataEditor.cs" />
     <Compile Include="Assets\Scripts\GameScript.cs" />
+    <Compile Include="Assets\Scripts\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\MenuManager.cs" />
+    <Compile Include="Assets\Scripts\SaveScoreManager.cs" />
+    <Compile Include="Assets\Scripts\ScoreDataEditor.cs" />
+    <Compile Include="Assets\Scripts\ScoreDisplayManager.cs" />
+    <Compile Include="Assets\Scripts\SequenceDataEditor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Levels\LevelTest.txt" />
-    <None Include="Assets\Levels\docLevel.txt" />
+    <None Include="Assets\Levels\Normal\Level1.txt" />
+    <None Include="Assets\Levels\Normal\Level10.txt" />
+    <None Include="Assets\Levels\Normal\Level11.txt" />
+    <None Include="Assets\Levels\Normal\Level2.txt" />
+    <None Include="Assets\Levels\Normal\Level3.txt" />
+    <None Include="Assets\Levels\Normal\Level4.txt" />
+    <None Include="Assets\Levels\Normal\Level5.txt" />
+    <None Include="Assets\Levels\Normal\Level6.txt" />
+    <None Include="Assets\Levels\Normal\Level7.txt" />
+    <None Include="Assets\Levels\Normal\Level8.txt" />
+    <None Include="Assets\Levels\Normal\Level9.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />

@@ -18,24 +18,34 @@ public class MenuManager : MonoBehaviour
     public GameObject GroupDisplay;
     public GameObject LeftArrow;
     public GameObject RightArrow;
+    public GameObject MainMenuButton;
+
 
     public GameObject ToggleTimer;
 
+
     public Canvas CanvasButtonParent;
     public string NameFile;
-    private string[] files;
+    private List<string> ListLevels;
+    private List<string> ListProgress;
 
     public bool ToggleTimerIsOn = false;
 
     private int indexPage = 1;
 
-    private string pathFolder = "Assets\\Levels";
+    public string sequence;
+
+    private string pathFolder = "Assets\\Levels\\";
+
+    private MainMenuManager MenuManagerAccess;
+
+    SequenceDataEditor sequenceData;
 
 
     // Use this for initialization
+
     void Start()
     {
-        LoadAllFiles();
 
         Button LeftArrowButtonComponent = LeftArrow.GetComponent<Button>();
         LeftArrowButtonComponent.onClick.AddListener(LeftArrowClicked);
@@ -47,8 +57,33 @@ public class MenuManager : MonoBehaviour
         Button StartButtonComponent = StartButtonObject.GetComponent<Button>();
         StartButtonComponent.onClick.AddListener(OnClickStartButton);
 
+
+        Button MainMenuButtonComponent = MainMenuButton.GetComponent<Button>();
+        MainMenuButtonComponent.onClick.AddListener(GoBackToMainMenu);
+
         Toggle toggleComponent = ToggleTimer.GetComponent<Toggle>();
         toggleComponent.onValueChanged.AddListener(ToggleValueChanged);
+
+        try
+        {
+            GameObject GameManagerObject = GameObject.Find("MainMenuManager");
+
+            MenuManagerAccess = (GameManagerObject.GetComponentInChildren<MainMenuManager>());
+
+            sequence = MenuManagerAccess.sequence;
+            Destroy(GameManagerObject);
+        }
+
+        catch
+        {
+            sequence = "Normal";
+        }
+
+        pathFolder += sequence;
+
+        LoadSequenceData();
+
+        LoadAllFiles();
     }
 
     private void ToggleValueChanged(bool value)
@@ -61,27 +96,32 @@ public class MenuManager : MonoBehaviour
     {
 
     }
+       
+    void LoadSequenceData()
+    {
+        string DataJson = File.ReadAllText(pathFolder+"\\sequenceData.json");
+        sequenceData = JsonUtility.FromJson<SequenceDataEditor>(DataJson);
+    }
     
     void LoadAllFiles()
     {
 
         int indexLevel = 0;
+        ListLevels = new List<string>();
+        ListProgress = new List<string>();
 
-        files = Directory.GetFiles(pathFolder, "*.txt");
         
-        if (files.Length > 8)
+        ListLevels = sequenceData.ListLevels;
+        ListProgress = sequenceData.LevelProgress;
+
+        if (ListLevels.Count > 10)
         {
             RightArrow.SetActive(true);
         }
 
 
-        foreach (string fileTxt in files)
+        foreach (string LevelName in ListLevels)
         {
-
-
-            string NameFile = fileTxt.Substring(pathFolder.Length + 1, fileTxt.Length - pathFolder.Length - 5);
-
-            
 
 
             GameObject ButtonLevel = Instantiate(LevelButtonPrefab, Vector3.zero, Quaternion.identity);
@@ -92,37 +132,46 @@ public class MenuManager : MonoBehaviour
 
             if (indexLevel % 2 == 0)
             {
-                buttonPostion[0] = 200;
+                buttonPostion[0] = -300;
             }
 
             else
             {
-                buttonPostion[0] = -200;
+                buttonPostion[0] = 300;
             }
 
-            int positionY = (indexLevel / 2 * -100) + 200;
+            int positionY = (indexLevel / 2 * -150) + 300;
 
             buttonPostion[1] = positionY;
 
             buttonPostion[2] = 0;
 
             ButtonLevel.GetComponent<RectTransform>().localPosition = buttonPostion;
-            ButtonLevel.GetComponentInChildren<Text>().text = NameFile;
-
-
+            ButtonLevel.GetComponentInChildren<Text>().text = LevelName;
+            
             Button ButtonLevelComponent = ButtonLevel.GetComponent<Button>();
-            ButtonLevelComponent.onClick.AddListener(OneLevelButtonClicked);
+
+
+
+            if (ListProgress.Contains(LevelName))
+            {
+                ButtonLevelComponent.onClick.AddListener(OneLevelButtonClicked);
+            }
+
+            else
+            {
+                ButtonLevelComponent.interactable = false;
+            }
 
             indexLevel++;
 
-            if (indexLevel == 8)
+            if (indexLevel == 10)
             {
                 indexLevel = 0;
                 break;
             }
-
-
         }
+        
 
     }
 
@@ -175,24 +224,18 @@ public class MenuManager : MonoBehaviour
 
         List<string> ListFilesCopy = new List<string>();
 
-        foreach (string fileName in files)
+        foreach (string fileName in ListLevels)
         {
             ListFilesCopy.Add(fileName);
         }
 
-        ListFilesCopy.RemoveRange(0, 8 * (indexPage-1));
+        ListFilesCopy.RemoveRange(0, 10 * (indexPage-1));
         
 
         int indexLevel = 0;
 
         foreach (string fileName in ListFilesCopy)
         {
-
-
-            string NameFile = fileName.Substring(pathFolder.Length + 1, fileName.Length - pathFolder.Length - 5);
-
-
-
 
             GameObject ButtonLevel = Instantiate(LevelButtonPrefab, Vector3.zero, Quaternion.identity);
 
@@ -202,22 +245,22 @@ public class MenuManager : MonoBehaviour
 
             if (indexLevel % 2 == 0)
             {
-                buttonPostion[0] = -200;
+                buttonPostion[0] = -300;
             }
 
             else
             {
-                buttonPostion[0] = 200;
+                buttonPostion[0] = 300;
             }
 
-            int positionY = (indexLevel / 2 * -100) + 200;
+            int positionY = (indexLevel / 2 * -150) + 300;
 
             buttonPostion[1] = positionY;
 
             buttonPostion[2] = 0;
 
             ButtonLevel.GetComponent<RectTransform>().localPosition = buttonPostion;
-            ButtonLevel.GetComponentInChildren<Text>().text = NameFile;
+            ButtonLevel.GetComponentInChildren<Text>().text = fileName;
 
 
             Button ButtonLevelComponent = ButtonLevel.GetComponent<Button>();
@@ -225,7 +268,7 @@ public class MenuManager : MonoBehaviour
 
             indexLevel++;
 
-            if (indexLevel == 8)
+            if (indexLevel == 10)
             {
                 indexLevel = 0;
                 break;
@@ -256,12 +299,12 @@ public class MenuManager : MonoBehaviour
 
         List<string> ListFilesCopy = new List<string>();
 
-        foreach (string fileName in files)
+        foreach (string fileName in ListLevels)
         {
             ListFilesCopy.Add(fileName);
         }
         
-        ListFilesCopy.RemoveRange(0, 8*indexPage);
+        ListFilesCopy.RemoveRange(0, 10*indexPage);
 
         indexPage++;
 
@@ -269,13 +312,7 @@ public class MenuManager : MonoBehaviour
         
         foreach (string fileName in ListFilesCopy)
         {
-
-
-            string NameFile = fileName.Substring(pathFolder.Length + 1, fileName.Length - pathFolder.Length - 5);
-
-
-
-
+            
             GameObject ButtonLevel = Instantiate(LevelButtonPrefab, Vector3.zero, Quaternion.identity);
 
             ButtonLevel.transform.SetParent(CanvasButtonParent.transform);
@@ -284,22 +321,22 @@ public class MenuManager : MonoBehaviour
 
             if (indexLevel % 2 == 0)
             {
-                buttonPostion[0] = -200;
+                buttonPostion[0] = -300;
             }
 
             else
             {
-                buttonPostion[0] = 200;
+                buttonPostion[0] = 300;
             }
 
-            int positionY = (indexLevel / 2 * -100) + 200;
+            int positionY = (indexLevel / 2 * -150) + 300;
 
             buttonPostion[1] = positionY;
 
             buttonPostion[2] = 0;
 
             ButtonLevel.GetComponent<RectTransform>().localPosition = buttonPostion;
-            ButtonLevel.GetComponentInChildren<Text>().text = NameFile;
+            ButtonLevel.GetComponentInChildren<Text>().text = fileName;
 
 
             Button ButtonLevelComponent = ButtonLevel.GetComponent<Button>();
@@ -307,7 +344,7 @@ public class MenuManager : MonoBehaviour
 
             indexLevel++;
 
-            if (indexLevel == 8)
+            if (indexLevel == 10)
             {
                 indexLevel = 0;
                 break;
@@ -316,7 +353,7 @@ public class MenuManager : MonoBehaviour
 
         }
 
-        if (ListFilesCopy.Count <= 8)
+        if (ListFilesCopy.Count <= 10)
         {
             RightArrow.SetActive(false);
         }
@@ -329,6 +366,18 @@ public class MenuManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
+    void GoNextAndSkip()
+    {
+        Debug.Log("potato");
+    }
+
+    void GoBackToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+    }
+    
+
+    
     
 
 }
