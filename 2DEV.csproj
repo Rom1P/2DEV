@@ -287,11 +287,13 @@
     <Compile Include="Assets\Scripts\CubeManager.cs" />
     <Compile Include="Assets\Scripts\GameDataEditor.cs" />
     <Compile Include="Assets\Scripts\GameScript.cs" />
+    <Compile Include="Assets\Scripts\LevelEditorManager.cs" />
     <Compile Include="Assets\Scripts\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\MenuManager.cs" />
     <Compile Include="Assets\Scripts\SaveScoreManager.cs" />
     <Compile Include="Assets\Scripts\ScoreDataEditor.cs" />
     <Compile Include="Assets\Scripts\ScoreDisplayManager.cs" />
+    <Compile Include="Assets\Scripts\SelectSequenceManager.cs" />
     <Compile Include="Assets\Scripts\SequenceDataEditor.cs" />
   </ItemGroup>
   <ItemGroup>

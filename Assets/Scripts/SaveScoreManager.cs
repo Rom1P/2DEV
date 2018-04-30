@@ -27,6 +27,8 @@ public class SaveScoreManager : MonoBehaviour {
 
             GameScriptAccess = (GameManagerObject.GetComponentInChildren<GameScript>());
             sequence = GameScriptAccess.sequence;
+
+            Destroy(GameManagerObject);
         }
 
         catch
@@ -80,9 +82,7 @@ public class SaveScoreManager : MonoBehaviour {
         ScoreDataAccess.ListPlayers = ListPlayers;
 
         string updateScores = JsonUtility.ToJson(ScoreDataAccess);
-
-
-
+        
         File.WriteAllText("Assets\\Data\\scores.json", updateScores);
     }
 

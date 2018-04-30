@@ -23,3 +23,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SaveScore.unity
     guid: 59bd1cc625c4ed94e94e42d146a0da73
+  - enabled: 1
+    path: Assets/Scenes/SelectSequence.unity
+    guid: cccb86cbfc03f8944b207b04988b49b4

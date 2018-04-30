@@ -53,7 +53,7 @@ public class MainMenuManager : MonoBehaviour {
 
             
 
-            int positionY = indexLevel * -200 + 250;
+            int positionY = indexLevel * -150 + 250;
 
             buttonPostion[1] = positionY;
 
@@ -61,9 +61,7 @@ public class MainMenuManager : MonoBehaviour {
             
 
             string NameFile = nameFolder.Substring(pathFolder.Length + 1, nameFolder.Length - pathFolder.Length-1);
-
-
-            print(NameFile);
+            
 
             ButtonLevel.GetComponent<RectTransform>().localPosition = buttonPostion;
             ButtonLevel.GetComponentInChildren<Text>().text = NameFile;
@@ -84,7 +82,7 @@ public class MainMenuManager : MonoBehaviour {
 
     void LevelEditorButtonClicked()
     {
-        SceneManager.LoadScene("LevelEditor", LoadSceneMode.Single);
+        SceneManager.LoadScene("SelectSequence", LoadSceneMode.Single);
     }
 
     void PlayButtonClicked()

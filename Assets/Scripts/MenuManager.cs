@@ -76,6 +76,7 @@ public class MenuManager : MonoBehaviour
 
         catch
         {
+            print("pooezf;zepfze");
             sequence = "Normal";
         }
 
