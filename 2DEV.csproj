@@ -299,7 +299,6 @@
   <ItemGroup>
     <None Include="Assets\Levels\Normal\Level1.txt" />
     <None Include="Assets\Levels\Normal\Level10.txt" />
-    <None Include="Assets\Levels\Normal\Level11.txt" />
     <None Include="Assets\Levels\Normal\Level2.txt" />
     <None Include="Assets\Levels\Normal\Level3.txt" />
     <None Include="Assets\Levels\Normal\Level4.txt" />

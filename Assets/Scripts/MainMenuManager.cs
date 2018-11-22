@@ -18,6 +18,42 @@ public class MainMenuManager : MonoBehaviour {
     public GameObject LevelEditorButton;
     public GameObject ScoresButton;
 
+    public SelectSequenceManager SelectSequenceManager
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
+    public ScoreDisplayManager ScoreDisplayManager
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
+    public MenuManager MenuManager
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
     // Use this for initialization
     void Start () {
         LoadAllSequences();
@@ -37,6 +73,7 @@ public class MainMenuManager : MonoBehaviour {
 		
 	}
 
+    //Load all folders
     void LoadAllSequences()
     {
         folders = Directory.GetDirectories(pathFolder);
@@ -75,9 +112,15 @@ public class MainMenuManager : MonoBehaviour {
 
     }
 
+    
     void SequenceButtonClicked()
     {
         sequence = (EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Text>().text);
+
+        if (!PlayButton.activeSelf)
+        {
+            PlayButton.SetActive(true);
+        }
     }
 
     void LevelEditorButtonClicked()
@@ -87,7 +130,7 @@ public class MainMenuManager : MonoBehaviour {
 
     void PlayButtonClicked()
     {
-        SceneManager.LoadScene("Menu", LoadSceneMode.Single);
+        SceneManager.LoadScene("Menu", LoadSceneMode.Single);        
     }
 
     void ButtonScoresClicked()

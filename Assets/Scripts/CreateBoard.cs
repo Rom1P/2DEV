@@ -14,9 +14,12 @@ public class CreateBoard : MonoBehaviour {
     public GameObject EmptyCasePrefab;
     public GameObject ArrivalCasePrefab;
     public GameObject CubeGame;
+    public GameObject TeleportPrefab;
 
     private List<GameObject> CaseBridgeList = new List<GameObject>();
-      
+
+    private List<string> xLines;
+
 
 
     // Use this for initialization
@@ -29,6 +32,8 @@ public class CreateBoard : MonoBehaviour {
 		
 	}
 
+
+    //In case of value of string instantiate a different prefab
     void LoadBoard(string path)
     {
 
@@ -39,12 +44,21 @@ public class CreateBoard : MonoBehaviour {
         float IndexX = ScaleX / 2;
         float IndexY = -(ScaleY / 2);
         float IndexZ = ScaleZ / 2;
-        
 
-        
+        xLines = new List<string>();
+
+
         string readText = File.ReadAllText(path);
 
-        string[] xLines = Regex.Split(readText, "\n");
+        string[] BoardListImport = Regex.Split(readText, "\n");
+
+        foreach (string TempString in BoardListImport)
+        {
+            if (TempString.Length > 1)
+            {
+                xLines.Add(TempString);
+            }
+        }
 
         foreach (string xLine in xLines)
         {
@@ -74,6 +88,11 @@ public class CreateBoard : MonoBehaviour {
                 else if (xLine[i].ToString() == "6")
                 {
                     Instantiate(StrongSwitchPrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
+                }
+
+                else if (xLine[i].ToString() == "7" || xLine[i].ToString() == "8")
+                {
+                    Instantiate(TeleportPrefab, new Vector3(IndexX, IndexY, IndexZ), transform.rotation);
                 }
 
                 else if (xLine[i].ToString() == "9")

@@ -1,0 +1,9 @@
+{
+  "ListBridges" : [
+    ""
+  ],
+  "SpawnX":2,
+  "SpawnZ":2,
+  "timer" : 70,
+  "arrivalTeleport" :"(2,11)"
+}

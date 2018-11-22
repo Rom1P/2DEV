@@ -10,4 +10,5 @@ public class GameDataEditor
     public int SpawnX;
     public int SpawnZ;
     public float timer;
+    public string arrivalTeleport;
 }

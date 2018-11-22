@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CreateBoard">
+    <Position X="12.25" Y="7.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>BAQAAAAAACABQAIQACEAAAAACIAAAAAAAAAAAAIAAAA=</HashCode>
+      <FileName>Assets\Scripts\CreateBoard.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CubeManager">
+    <Position X="12.5" Y="11.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>EgQAAAAAACggAAAAACAAAAAAAABAAAAAAAAAAABAIAA=</HashCode>
+      <FileName>Assets\Scripts\CubeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameDataEditor">
+    <Position X="12.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\GameDataEditor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameScript">
+    <Position X="10" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QuQIwCgsACEUABQEROGwQIAggAiAAEAIAwjUESMEAFA=</HashCode>
+      <FileName>Assets\Scripts\GameScript.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CubeManager" />
+      <Property Name="CreateBoard" />
+      <Property Name="GameDataEditor" />
+      <Property Name="SaveScoreManager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="LevelEditorManager">
+    <Position X="3.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQEEABEUCAhWATAxpEBgSAQAkEoAgAkAQFSJAhAIAA=</HashCode>
+      <FileName>Assets\Scripts\LevelEditorManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MainMenuManager">
+    <Position X="1.25" Y="12" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQAgAAAECAEAAIAAAgEAAIAEgAAAAAgQQAAgAIACEA=</HashCode>
+      <FileName>Assets\Scripts\MainMenuManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="SelectSequenceManager" />
+      <Property Name="ScoreDisplayManager" />
+      <Property Name="MenuManager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="MenuManager">
+    <Position X="6.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAQgSECAAAAAAAAIAARIJAoghACEgQQAUUCABBEA=</HashCode>
+      <FileName>Assets\Scripts\MenuManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="GameScript" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SaveScoreManager">
+    <Position X="17.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ECQBAAEAACAAAAAQQAAAAAAQQAAgAIAIASAAAAAAQAA=</HashCode>
+      <FileName>Assets\Scripts\SaveScoreManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="GameDataEditor" />
+      <Property Name="ScoreDataEditor" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ScoreDataEditor">
+    <Position X="17.25" Y="13.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAABAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\ScoreDataEditor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ScoreDisplayManager">
+    <Position X="3.75" Y="15.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AiQgAAEAAKAAAAAQAAAAAAAAABAEAAAIAAAAAAAAAQA=</HashCode>
+      <FileName>Assets\Scripts\ScoreDisplayManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ScoreDataEditor" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SelectSequenceManager">
+    <Position X="1.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAAAgAADQAAAAAgAsEAAgBAABAAEA=</HashCode>
+      <FileName>Assets\Scripts\SelectSequenceManager.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="LevelEditorManager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SequenceDataEditor">
+    <Position X="7.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAgAAAEAAAAAAAAAAAQA=</HashCode>
+      <FileName>Assets\Scripts\SequenceDataEditor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

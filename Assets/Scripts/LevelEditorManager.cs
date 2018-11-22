@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LevelEditorManager : MonoBehaviour
@@ -23,6 +24,8 @@ public class LevelEditorManager : MonoBehaviour
     public GameObject SetSpawn;
     public GameObject SetArrival;
 
+    public GameObject Menu;
+
     public GameObject GroupButtons;
 
     List<List<string>> mapData;
@@ -34,6 +37,7 @@ public class LevelEditorManager : MonoBehaviour
     private int SpawnX = 1;
     private int SpawnZ = 1;
     private int timer = 60;
+    private string arrivalTeleport = "";
     private List<String> ListBridges = new List<string>();
 
     private GameDataEditor GameDataAccess = new GameDataEditor();
@@ -97,6 +101,10 @@ public class LevelEditorManager : MonoBehaviour
         Button SetStrongSwitchButton = SetStrong.GetComponent<Button>();
         SetStrongSwitchButton.onClick.AddListener(SetCaseAsStrongSwitch);
 
+        Button MenuButton = Menu.GetComponent<Button>();
+        MenuButton.onClick.AddListener(GoBackToMenu);
+
+
 
         mapData = new List<List<string>>();
 
@@ -126,6 +134,11 @@ public class LevelEditorManager : MonoBehaviour
 
     }
 
+    void GoBackToMenu()
+    {
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+    }
+
     
 
     void SetDim10()
@@ -147,6 +160,8 @@ public class LevelEditorManager : MonoBehaviour
         LoadBoard();
     }
     
+
+    //Create list of cases
     void LoadBoard()
     {
         for (int i=0; i <= dimensions; i++)
@@ -178,8 +193,6 @@ public class LevelEditorManager : MonoBehaviour
 
     void OnClickButtonCase()
     {
-        Debug.Log(EventSystem.current.currentSelectedGameObject.name);
-
         string NameObject = EventSystem.current.currentSelectedGameObject.name;
 
         string[] SplitName = NameObject.Split(',');
@@ -189,17 +202,18 @@ public class LevelEditorManager : MonoBehaviour
         currentCase = EventSystem.current.currentSelectedGameObject;
 
 
-
         if (!GroupButtons.activeSelf)
         {
             GroupButtons.SetActive(true);
         }
     }
 
+
+    //SaveData in new files
     void SaveData(string pathFolder,string NameLevel)
     {
 
-        mapData[ArrivalLine][ArrivalColumn] = "7";
+        mapData[ArrivalLine][ArrivalColumn] = "9";
 
         File.WriteAllText(pathFolder + NameLevel + ".txt", "");
         foreach (List<string> TempListTostring in mapData)
@@ -214,6 +228,12 @@ public class LevelEditorManager : MonoBehaviour
         GameDataAccess.SpawnX = SpawnX;
         GameDataAccess.SpawnZ = SpawnZ;
         GameDataAccess.timer = timer;
+
+        if (arrivalTeleport == "")
+        {
+            arrivalTeleport = "(" + SpawnX.ToString() +"," + SpawnZ.ToString();
+        }
+        GameDataAccess.arrivalTeleport = arrivalTeleport;
 
         string GameDataSave = JsonUtility.ToJson(GameDataAccess);
 
@@ -267,6 +287,7 @@ public class LevelEditorManager : MonoBehaviour
         File.WriteAllText(pathFolder + "sequenceData.json", UpdatedSequence);
     }
 
+
     void OnClickButtonSave()
     {
         string NameLevel = LevelNameText.GetComponent<Text>().text;
@@ -290,7 +311,7 @@ public class LevelEditorManager : MonoBehaviour
         else
         {
             mapData[currentLine][currentColumn] = "3";
-            CurrentBridgeBuilding += "(" + currentLine.ToString() + "," + currentColumn.ToString() + ");";
+            CurrentBridgeBuilding += "(" + (currentColumn+1).ToString() + "," + (currentLine+1).ToString() + ");";
         }
         
     }
@@ -310,7 +331,7 @@ public class LevelEditorManager : MonoBehaviour
         else
         {
             mapData[currentLine][currentColumn] = "4";
-            CurrentBridgeBuilding += "(" + currentLine.ToString() + "," + currentColumn.ToString() + ");";
+            CurrentBridgeBuilding += "(" + (currentColumn + 1).ToString() + "," + (currentLine + 1).ToString() + ");";
         }
 
     }
@@ -358,8 +379,8 @@ public class LevelEditorManager : MonoBehaviour
         cb.normalColor = ColorSpawn;
         currentCase.GetComponent<Button>().colors = cb;
 
-        SpawnX = currentLine;
-        SpawnZ = currentColumn;
+        SpawnX = currentColumn+1;
+        SpawnZ = currentLine+1;
 
         Spawn = currentCase;
 
@@ -378,7 +399,7 @@ public class LevelEditorManager : MonoBehaviour
             AddingToBridge = true;
             TipBridge.SetActive(true);
 
-            CurrentBridgeBuilding += "N0(" + currentLine.ToString() + "," + currentColumn.ToString() + ")-[";
+            CurrentBridgeBuilding += "N0(" + (currentColumn + 1).ToString() + "," + (currentLine+1).ToString() + ")-[";
 
 
         }
@@ -407,7 +428,7 @@ public class LevelEditorManager : MonoBehaviour
             AddingToBridge = true;
             TipBridge.SetActive(true);
 
-            CurrentBridgeBuilding += "S0(" + currentLine.ToString() + "," + currentColumn.ToString() + ")-[";
+            CurrentBridgeBuilding += "S0(" + (currentColumn + 1).ToString() + "," + (currentLine + 1).ToString() + ")-[";
 
 
         }

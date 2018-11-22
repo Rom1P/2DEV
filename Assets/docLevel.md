@@ -8,3 +8,5 @@
 7 = Start Teleporter
 8 = Arrival Teleporter
 9 = Arrival Point
+
+//For Bridges and teleporters declaration is like (positionX start 1,position Z start 1)

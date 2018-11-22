@@ -20,36 +20,52 @@ public class GameScript : MonoBehaviour
        11111 = Line; 10 = Column
        2 : Line = 1(0) Column = 4(3)*/
 
-    Vector3 TopRight;
-    Vector3 BottomRight;
-    Vector3 TopLeft;
-    Vector3 BottomLeft;
+
+    //First setup our differents gameobjects we need
+
+    //Buttons
+
+    public GameObject ButtonRetryLoose;
+    public GameObject ButtonMenuLoose;
+    public GameObject ButtonQuitLoose;
+    public GameObject ButtonNextWin;
+    public GameObject ButtonMenuWin;
+    public GameObject ButtonQuitWin;
+
+    public GameObject ButtonMenu;
+
+    public GameObject LooseButtons;
+    public GameObject WinButtons;
 
     public GameObject centerPrefab;
     public GameObject CubeGame;
 
-
     public GameObject WoodCasePrefab;
     public GameObject BrickCasePrefab;
 
-    public Text TextMoves;
-    public Text TextNameLevel;
+    public GameObject BoardLoaderObject;
+
+    //Json Classes
+
+    GameDataEditor loadedData;
+    SequenceDataEditor sequenceData;
+
+    //Access To previous scenes
 
     private MenuManager MenuManagerAccess;
 
-    private string NameFile;
+    //UI Text
+    
+    public Text TextMoves;
+    public Text TextNameLevel;
+    public Text TimerText;
 
+    public Vector3 TopRight;
+    public Vector3 BottomRight;
+    public Vector3 TopLeft;
+    public Vector3 BottomLeft;
 
-    private string[] BoardList;
-
-    GameObject BoardLoaderObject;
-
-    private new Dictionary<string, List<GameObject>> NormalSwitches;
-    private new Dictionary<string, List<GameObject>> StrongSwitches;
-
-    int Moves;
-
-    GameDataEditor loadedData;
+    //Var that contains important elements to launch the level
 
     private bool withTimer;
 
@@ -59,32 +75,82 @@ public class GameScript : MonoBehaviour
 
     private bool inGame;
 
-    public Text TimerText;
-
-    public GameObject LooseButtons;
-    public GameObject WinButtons;
+    private string NameFile;
 
     public string sequence;
 
-    /* Buttons */
-
-    public GameObject ButtonRetryLoose;
-    public GameObject ButtonMenuLoose;
-    public GameObject ButtonQuitLoose;
-    public GameObject ButtonNextWin;
-    public GameObject ButtonMenuWin;
-    public GameObject ButtonQuitWin;
-
     private string CompletePath;
 
-    SequenceDataEditor sequenceData;
+    public int Moves;
+
+    //Data of level
+
+    private string[] BoardListImport;
+    private List<string> BoardList = new List<string>();
+
+
+    private Dictionary<string, List<GameObject>> NormalSwitches;
+    private Dictionary<string, List<GameObject>> StrongSwitches;
+
+    private List<string> CurrentlyActivatedCasesBridge;
+
+    private string arrivalTeleport;
+
+    public CubeManager CubeManager
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
+    public CreateBoard CreateBoard
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
+    public GameDataEditor GameDataEditor
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
+    public SaveScoreManager SaveScoreManager
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
 
 
     // Use this for initialization
     void Start()
     {
 
-
+        //Get name of level to load by accessing other scenes
         try
         {
             GameObject GameManagerObject = GameObject.Find("MenuManager");
@@ -103,20 +169,23 @@ public class GameScript : MonoBehaviour
 
         catch
         {
-
             NameFile = "Level1";
             sequence = "Normal";
             withTimer = false;
         }
 
-        inGame = true;
+        //Load sequence data in json
+
 
         string DataJson = File.ReadAllText("Assets\\Levels\\" + sequence + "\\sequenceData.json");
 
         sequenceData = JsonUtility.FromJson<SequenceDataEditor>(DataJson);
 
-        TextNameLevel.GetComponentInChildren<Text>().text = NameFile;
 
+
+        //Get paths
+        
+        TextNameLevel.GetComponentInChildren<Text>().text = NameFile;
 
 
         CompletePath = "Assets\\Levels\\" + sequence + "\\" + NameFile + ".txt";
@@ -124,24 +193,52 @@ public class GameScript : MonoBehaviour
         string DataPath = "Assets\\Levels\\" + sequence + "\\" + NameFile + ".json";
 
 
+        //Load Board as a list
+
         string readText = File.ReadAllText(CompletePath);
 
-        BoardList = Regex.Split(readText, "\n");
+        BoardListImport = Regex.Split(readText, "\n");
+
+        //Need to clear list in case of restarting
+
+        BoardList.Clear();
+
+        foreach (string TempString in BoardListImport)
+        {
+            if (TempString.Length > 1)
+            {
+                BoardList.Add(TempString);
+            }
+        }
+
+        //Tell to BoardLoader to load the board
 
         BoardLoaderObject = GameObject.Find("BoardLoader");
         BoardLoaderObject.SendMessage("LoadBoard", CompletePath);
 
+        //Create dictionnary that contains case of switches as key and list of GameObject to toggle as values
+
         NormalSwitches = new Dictionary<string, List<GameObject>>();
         StrongSwitches = new Dictionary<string, List<GameObject>>();
 
-        AddButtonsListener();
+        //Usefull when the cube is on a bridge case to know if that case is on or off
 
+        CurrentlyActivatedCasesBridge = new List<string>();
 
+        //Load JsonData of the level
 
         string jsonString = File.ReadAllText(DataPath);
 
         loadedData = JsonUtility.FromJson<GameDataEditor>(jsonString);
         LoadData();
+
+        //Add UI
+
+        AddButtonsListener();
+
+        //We start the game so turn bool true and set parameters of the level
+
+        inGame = true;
 
         timeElapsed = 0;
 
@@ -151,7 +248,6 @@ public class GameScript : MonoBehaviour
         }
 
         Moves = 0;
-
 
     }
 
@@ -193,12 +289,11 @@ public class GameScript : MonoBehaviour
             {
 
             }
-
         }
-
-
     }
 
+
+    //Setup UI
     void AddButtonsListener()
     {
         /* Retry */
@@ -225,8 +320,14 @@ public class GameScript : MonoBehaviour
         Button QuitButtonWin = ButtonQuitWin.GetComponent<Button>();
         QuitButtonWin.onClick.AddListener(QuitGame);
 
+
+        Button MenuButton = ButtonMenu.GetComponent<Button>();
+        MenuButton.onClick.AddListener(GoMenu);
+
     }
 
+
+    //When Move has been done we check current rotation of cube and then get values of case it is on
     void ReceiveAfterRotate()
     {
 
@@ -239,7 +340,6 @@ public class GameScript : MonoBehaviour
 
         if ((int)CubeGame.transform.localEulerAngles[2] == 90 || (int)CubeGame.transform.localEulerAngles[2] == 270)
         {
-
             TopRight = new Vector3(CubeGame.transform.localPosition[0] + CubeGame.transform.localScale[0], 0, CubeGame.transform.localPosition[2] + CubeGame.transform.localScale[2] / 2);
             TopLeft = new Vector3(CubeGame.transform.localPosition[0] - CubeGame.transform.localScale[0], 0, CubeGame.transform.localPosition[2] + CubeGame.transform.localScale[2] / 2);
             BottomLeft = new Vector3(CubeGame.transform.localPosition[0] - CubeGame.transform.localScale[0], 0, CubeGame.transform.localPosition[2] - CubeGame.transform.localScale[2] / 2);
@@ -247,15 +347,20 @@ public class GameScript : MonoBehaviour
 
             try
             {
+                
                 int CurrentLine = (int)BottomLeft[2] / (int)CubeGame.transform.localScale[2];
                 int CurrentColumn = (int)BottomLeft[0] / (int)CubeGame.transform.localScale[0];
+
+                string Coordinate1 = "(" + (CurrentColumn + 1).ToString() + "," + (CurrentLine + 1).ToString() + ")";
+                string Coordinate2 = "(" + (CurrentColumn + 2).ToString() + "," + (CurrentLine + 1).ToString() + ")";
+
 
 
                 string CaseValue1 = BoardList[CurrentLine][CurrentColumn].ToString();
                 string CaseValue2 = BoardList[CurrentLine][CurrentColumn + 1].ToString();
 
 
-                if ((CaseValue1 == "1" || CaseValue1 == "2" || CaseValue1 == "3" || CaseValue1 == "4" || CaseValue1 == "5" || CaseValue1 == "6") && (CaseValue2 == "1" || CaseValue2 == "2" || CaseValue2 == "3" || CaseValue2 == "4" || CaseValue2 == "5" || CaseValue2 == "6"))
+                if ((CaseValue1 == "1" || CaseValue1 == "2" || CaseValue1 == "3" || CaseValue1 == "4" || CaseValue1 == "5" || CaseValue1 == "6" || CaseValue1 == "7" || CaseValue1 == "8" || CaseValue1 == "9") && (CaseValue2 == "1" || CaseValue2 == "2" || CaseValue2 == "3" || CaseValue2 == "4" || CaseValue2 == "5" || CaseValue2 == "6" || CaseValue2 == "7" || CaseValue1 == "8" || CaseValue2 == "9"))
                 {
                     /* Bridge */
                     if (CaseValue1 == "5")
@@ -271,14 +376,24 @@ public class GameScript : MonoBehaviour
 
                         for (var i = 0; i < CaseBridgeList.Count; i++)
                         {
+                            int tempPosX = (int)CaseBridgeList[i].transform.position[0] - 5;
+                            int tempPosZ = (int)CaseBridgeList[i].transform.position[2] - 5;
+
+                            int indexXTemp = tempPosX / 10;
+                            int indexZTemp = tempPosZ / 10;
+
+                            string CoordinateTemp = "(" + (indexXTemp + 1).ToString() + "," + (indexZTemp + 1).ToString() + ")";
+
                             if (!CaseBridgeList[i].activeSelf)
                             {
                                 CaseBridgeList[i].SetActive(true);
+                                CurrentlyActivatedCasesBridge.Add(CoordinateTemp);
                             }
 
                             else
                             {
                                 CaseBridgeList[i].SetActive(false);
+                                CurrentlyActivatedCasesBridge.Remove(CoordinateTemp);
                             }
 
                         }
@@ -297,30 +412,52 @@ public class GameScript : MonoBehaviour
 
                         for (var i = 0; i < CaseBridgeList.Count; i++)
                         {
+
+                            int tempPosX = (int)CaseBridgeList[i].transform.position[0] - 5;
+                            int tempPosZ = (int)CaseBridgeList[i].transform.position[2] - 5;
+
+                            int indexXTemp = tempPosX / 10;
+                            int indexZTemp = tempPosZ / 10;
+
+                            string CoordinateTemp = "(" + (indexXTemp + 1).ToString() + "," + (indexZTemp + 1).ToString() + ")";
+
                             if (!CaseBridgeList[i].activeSelf)
                             {
                                 CaseBridgeList[i].SetActive(true);
+                                CurrentlyActivatedCasesBridge.Add(CoordinateTemp);
                             }
 
                             else
                             {
                                 CaseBridgeList[i].SetActive(false);
+                                CurrentlyActivatedCasesBridge.Remove(CoordinateTemp);
                             }
 
                         }
                     }
+
+                    if ((CaseValue1 == "3" || CaseValue1 == "4") && !CurrentlyActivatedCasesBridge.Contains(Coordinate1))
+                    {
+                        LoosingProtocol();
+                    }
+
+                    if ((CaseValue2 == "3" || CaseValue2 == "4") && !CurrentlyActivatedCasesBridge.Contains(Coordinate2))
+                    {
+                        
+                        LoosingProtocol();
+                    }
                 }
 
-
+                
                 else
                 {
                     LoosingProtocol();
-
                 }
             }
 
-            catch
+            catch (Exception e)
             {
+                print(e);
                 LoosingProtocol();
             }
 
@@ -349,7 +486,11 @@ public class GameScript : MonoBehaviour
                 string CaseValue1 = BoardList[CurrentLine][CurrentColumn].ToString();
                 string CaseValue2 = BoardList[CurrentLine + 1][CurrentColumn].ToString();
 
-                if ((CaseValue1 == "1" || CaseValue1 == "2" || CaseValue1 == "3" || CaseValue1 == "4" || CaseValue1 == "5" || CaseValue1 == "6") && (CaseValue2 == "1" || CaseValue2 == "2" || CaseValue2 == "3" || CaseValue2 == "4" || CaseValue2 == "5" || CaseValue2 == "6"))
+
+                string Coordinate1 = "(" + (CurrentColumn + 1).ToString() + "," + (CurrentLine + 1).ToString() + ")";
+                string Coordinate2 = "(" + (CurrentColumn + 1).ToString() + "," + (CurrentLine+2).ToString() + ")";
+
+                if ((CaseValue1 == "1" || CaseValue1 == "2" || CaseValue1 == "3" || CaseValue1 == "4" || CaseValue1 == "5" || CaseValue1 == "6" || CaseValue1 == "7" || CaseValue1 == "8" || CaseValue1 == "9") && (CaseValue2 == "1" || CaseValue2 == "2" || CaseValue2 == "3" || CaseValue2 == "4" || CaseValue2 == "5" || CaseValue2 == "6" || CaseValue2 == "7" || CaseValue1 == "8" || CaseValue2 == "9"))
                 {
                     /* Bridge */
                     if (CaseValue1 == "5")
@@ -365,14 +506,24 @@ public class GameScript : MonoBehaviour
 
                         for (var i = 0; i < CaseBridgeList.Count; i++)
                         {
+                            int tempPosX = (int)CaseBridgeList[i].transform.position[0] - 5;
+                            int tempPosZ = (int)CaseBridgeList[i].transform.position[2] - 5;
+
+                            int indexXTemp = tempPosX / 10;
+                            int indexZTemp = tempPosZ / 10;
+
+                            string CoordinateTemp = "(" + (indexXTemp + 1).ToString() + "," + (indexZTemp + 1).ToString() + ")";
+
                             if (!CaseBridgeList[i].activeSelf)
                             {
                                 CaseBridgeList[i].SetActive(true);
+                                CurrentlyActivatedCasesBridge.Add(CoordinateTemp);
                             }
 
                             else
                             {
                                 CaseBridgeList[i].SetActive(false);
+                                CurrentlyActivatedCasesBridge.Remove(CoordinateTemp);
                             }
 
                         }
@@ -392,17 +543,37 @@ public class GameScript : MonoBehaviour
 
                         for (var i = 0; i < CaseBridgeList.Count; i++)
                         {
+                            int tempPosX = (int)CaseBridgeList[i].transform.position[0] - 5;
+                            int tempPosZ = (int)CaseBridgeList[i].transform.position[2] - 5;
+
+                            int indexXTemp = tempPosX / 10;
+                            int indexZTemp = tempPosZ / 10;
+
+                            string CoordinateTemp = "(" + (indexXTemp + 1).ToString() + "," + (indexZTemp + 1).ToString() + ")";
+
                             if (!CaseBridgeList[i].activeSelf)
                             {
                                 CaseBridgeList[i].SetActive(true);
+                                CurrentlyActivatedCasesBridge.Add(CoordinateTemp);
                             }
 
                             else
                             {
                                 CaseBridgeList[i].SetActive(false);
+                                CurrentlyActivatedCasesBridge.Remove(CoordinateTemp);
                             }
 
                         }
+                    }
+
+                    if ((CaseValue1 == "3" || CaseValue1 == "4" ) && !CurrentlyActivatedCasesBridge.Contains(Coordinate1))
+                    {
+                        LoosingProtocol();
+                    }
+
+                    if ((CaseValue2 == "3" || CaseValue2 == "4") && !CurrentlyActivatedCasesBridge.Contains(Coordinate2))
+                    {
+                        LoosingProtocol();
                     }
                 }
 
@@ -436,6 +607,9 @@ public class GameScript : MonoBehaviour
                 int CurrentLine = (int)BottomLeft[2] / (int)CubeGame.transform.localScale[2];
                 int CurrentColumn = (int)BottomLeft[0] / (int)CubeGame.transform.localScale[0];
 
+
+                string Coordinate = "(" + (CurrentColumn + 1).ToString() + "," + (CurrentLine + 1).ToString() + ")";
+
                 string CaseValue = BoardList[CurrentLine][CurrentColumn].ToString();
 
 
@@ -454,11 +628,14 @@ public class GameScript : MonoBehaviour
                     LoosingProtocol();
                 }
 
+                if (CaseValue == "3" && !CurrentlyActivatedCasesBridge.Contains(Coordinate))
+                {                    
+                    LoosingProtocol();
+                }
+
                 if (CaseValue == "2" || CaseValue == "4")
                 {
                     /* Wood Case*/
-
-
                     LoosingProtocol();
                 }
 
@@ -469,22 +646,30 @@ public class GameScript : MonoBehaviour
 
                     string keyList = (CurrentColumn + 1).ToString() + "," + (CurrentLine + 1).ToString();
 
-
                     CaseBridgeList = NormalSwitches[keyList];
 
 
                     for (var i = 0; i < CaseBridgeList.Count; i++)
                     {
+                        int tempPosX = (int)CaseBridgeList[i].transform.position[0] - 5;
+                        int tempPosZ = (int)CaseBridgeList[i].transform.position[2] - 5;
+
+                        int indexXTemp = tempPosX / 10;
+                        int indexZTemp = tempPosZ / 10;
+
+                        string CoordinateTemp = "(" + (indexXTemp + 1).ToString() + "," + (indexZTemp + 1).ToString() + ")";
+
                         if (!CaseBridgeList[i].activeSelf)
                         {
                             CaseBridgeList[i].SetActive(true);
+                            CurrentlyActivatedCasesBridge.Add(CoordinateTemp);
                         }
 
                         else
                         {
                             CaseBridgeList[i].SetActive(false);
+                            CurrentlyActivatedCasesBridge.Remove(CoordinateTemp);
                         }
-
                     }
 
                 }
@@ -496,29 +681,53 @@ public class GameScript : MonoBehaviour
 
                     string keyList = (CurrentColumn + 1).ToString() + "," + (CurrentLine + 1).ToString();
 
-
                     CaseBridgeList = StrongSwitches[keyList];
 
 
                     for (var i = 0; i < CaseBridgeList.Count; i++)
                     {
+                        int tempPosX = (int)CaseBridgeList[i].transform.position[0] - 5;
+                        int tempPosZ = (int)CaseBridgeList[i].transform.position[2] - 5;
+
+                        int indexXTemp = tempPosX / 10;
+                        int indexZTemp = tempPosZ / 10;
+
+                        string CoordinateTemp = "(" + (indexXTemp + 1).ToString() + "," + (indexZTemp + 1).ToString() + ")";
+
                         if (!CaseBridgeList[i].activeSelf)
                         {
                             CaseBridgeList[i].SetActive(true);
+                            CurrentlyActivatedCasesBridge.Add(CoordinateTemp);
                         }
 
                         else
                         {
                             CaseBridgeList[i].SetActive(false);
+                            CurrentlyActivatedCasesBridge.Remove(CoordinateTemp);
                         }
-
                     }
+                }
 
+                if (CaseValue == "7")
+                {
+                    string[] arrivalTeleportArray = arrivalTeleport.Split(',');
+
+                    string arrivalTeleportXString = arrivalTeleportArray[0].Substring(1, arrivalTeleportArray[0].Length-1);
+                    string arrivalTeleportZString = arrivalTeleportArray[1].Substring(0, arrivalTeleportArray[1].Length-1);
+
+                    int arrivalTeleportX = Int32.Parse(arrivalTeleportXString);
+                    int arrivalTeleportZ = Int32.Parse(arrivalTeleportZString);
+
+                    int positionX = (arrivalTeleportX * 10)-5;
+                    int positionZ = (arrivalTeleportZ * 10)-5;
+
+                    CubeGame.transform.position = new Vector3(positionX, 10, positionZ);
                 }
             }
 
-            catch
+            catch (Exception e)
             {
+                print(e);
                 LoosingProtocol();
             }
 
@@ -537,151 +746,172 @@ public class GameScript : MonoBehaviour
 
     }
 
+
+    //Load JsonFile (Bridges and teleporters)
     void LoadData()
     {
 
         /* Load Switches And Bridges */
-
-
         SetSpawnPoint();
 
-        foreach (string DataBridge in loadedData.ListBridges)
+        try
         {
-            bool SwitchToLoadNormal = true;
-            bool BridgeOpen = false;
 
-            List<GameObject> CaseBridgeTemp = new List<GameObject>();
-
-            int indexXSwitch;
-            int indexZSwitch;
-
-            if (DataBridge[0].ToString() == "S")
+            foreach (string DataBridge in loadedData.ListBridges)
             {
-                SwitchToLoadNormal = false;
-            }
+                bool SwitchToLoadNormal = true;
+                bool BridgeOpen = false;
 
-            else if (DataBridge[0].ToString() == "N")
-            {
-                SwitchToLoadNormal = true;
-            }
+                List<GameObject> CaseBridgeTemp = new List<GameObject>();
 
-            if (DataBridge[1].ToString() == "0")
-            {
-                BridgeOpen = false;
-            }
+                int indexXSwitch;
+                int indexZSwitch;
 
-            else if (DataBridge[1].ToString() == "1")
-            {
-                BridgeOpen = true;
-            }
-
-            string[] SplitsData = DataBridge.Split('-');
-
-            string Coord = SplitsData[0];
-            int indexTemp = Coord.IndexOf("(") + 1;
-            string RawCoord = Coord.Substring(indexTemp, Coord.Length - indexTemp - 1);
-
-
-            string[] SplitsCoord = RawCoord.Split(',');
-
-            indexXSwitch = Int32.Parse(SplitsCoord[0]);
-            indexZSwitch = Int32.Parse(SplitsCoord[1]);
-
-
-            string ListCaseBridge = SplitsData[1];
-
-            ListCaseBridge = ListCaseBridge.Substring(1, ListCaseBridge.Length - 2);
-
-
-            string[] SplitsCoordData = ListCaseBridge.Split(';');
-
-            int indexXCase;
-            int indexZCase;
-
-            foreach (string dataCoord in SplitsCoordData)
-            {
-
-                int indexTemp2 = dataCoord.IndexOf("(") + 1;
-
-
-
-                string RawCaseCoord = dataCoord.Substring(indexTemp2, dataCoord.Length - indexTemp2 - 1);
-                string[] SplitCoordCase = RawCaseCoord.Split(',');
-
-
-
-                indexXCase = Int32.Parse(SplitCoordCase[0]);
-                indexZCase = Int32.Parse(SplitCoordCase[1]);
-
-
-
-                float ScaleY = WoodCasePrefab.transform.localScale[1];
-                float IndexY = -(ScaleY / 2);
-
-
-                float postionX = (indexXCase * WoodCasePrefab.transform.localScale[0]) - (WoodCasePrefab.transform.localScale[0] / 2);
-                float postionZ = (indexZCase * WoodCasePrefab.transform.localScale[2]) - (WoodCasePrefab.transform.localScale[2] / 2);
-
-                GameObject TempCase;
-
-                if (BoardList[indexZCase - 1][indexXCase - 1].ToString() == "3")
+                if (DataBridge[0].ToString() == "S")
                 {
-                    TempCase = Instantiate(BrickCasePrefab, new Vector3(postionX, IndexY, postionZ), transform.rotation);
-                    CaseBridgeTemp.Add(TempCase);
-                    if (!BridgeOpen)
+                    SwitchToLoadNormal = false;
+                }
+
+                else if (DataBridge[0].ToString() == "N")
+                {
+                    SwitchToLoadNormal = true;
+                }
+
+                if (DataBridge[1].ToString() == "0")
+                {
+                    BridgeOpen = false;
+                }
+
+                else if (DataBridge[1].ToString() == "1")
+                {
+                    BridgeOpen = true;
+                }
+
+                string[] SplitsData = DataBridge.Split('-');
+
+                string Coord = SplitsData[0];
+                int indexTemp = Coord.IndexOf("(") + 1;
+                string RawCoord = Coord.Substring(indexTemp, Coord.Length - indexTemp - 1);
+
+
+                string[] SplitsCoord = RawCoord.Split(',');
+
+                indexXSwitch = Int32.Parse(SplitsCoord[0]);
+                indexZSwitch = Int32.Parse(SplitsCoord[1]);
+
+
+                string ListCaseBridge = SplitsData[1];
+
+                ListCaseBridge = ListCaseBridge.Substring(1, ListCaseBridge.Length - 2);
+
+
+                string[] SplitsCoordData = ListCaseBridge.Split(';');
+
+                int indexXCase;
+                int indexZCase;
+
+                foreach (string dataCoord in SplitsCoordData)
+                {
+
+                    int indexTemp2 = dataCoord.IndexOf("(") + 1;
+
+
+
+                    string RawCaseCoord = dataCoord.Substring(indexTemp2, dataCoord.Length - indexTemp2 - 1);
+                    string[] SplitCoordCase = RawCaseCoord.Split(',');
+
+
+
+                    indexXCase = Int32.Parse(SplitCoordCase[0]);
+                    indexZCase = Int32.Parse(SplitCoordCase[1]);
+
+
+
+                    float ScaleY = WoodCasePrefab.transform.localScale[1];
+                    float IndexY = -(ScaleY / 2);
+
+
+                    float postionX = (indexXCase * WoodCasePrefab.transform.localScale[0]) - (WoodCasePrefab.transform.localScale[0] / 2);
+                    float postionZ = (indexZCase * WoodCasePrefab.transform.localScale[2]) - (WoodCasePrefab.transform.localScale[2] / 2);
+
+                    GameObject TempCase;
+
+                    if (BoardList[indexZCase - 1][indexXCase - 1].ToString() == "3")
                     {
-                        TempCase.SetActive(false);
+                        TempCase = Instantiate(BrickCasePrefab, new Vector3(postionX, IndexY, postionZ), transform.rotation);
+                        CaseBridgeTemp.Add(TempCase);
+                        if (!BridgeOpen)
+                        {
+                            TempCase.SetActive(false);
+                        }
+
+                        else
+                        {
+                            string CoordinateTemp = "(" + indexXCase.ToString() + "," + indexZCase.ToString() + ")";
+                            CurrentlyActivatedCasesBridge.Add(CoordinateTemp);
+                        }
+                    }
+
+                    else if (BoardList[indexZCase - 1][indexXCase - 1].ToString() == "4")
+                    {
+                        TempCase = Instantiate(WoodCasePrefab, new Vector3(postionX, IndexY, postionZ), transform.rotation);
+                        CaseBridgeTemp.Add(TempCase);
+                        if (!BridgeOpen)
+                        {
+                            TempCase.SetActive(false);
+                        }
+
+                        else
+                        {
+                            string CoordinateTemp = "(" + indexXCase.ToString() + "," + indexZCase.ToString() + ")";
+                            CurrentlyActivatedCasesBridge.Add(CoordinateTemp);
+                        }
+                    }
+
+
+
+
+                }
+
+
+                string CoordSwitchForList = indexXSwitch.ToString() + "," + indexZSwitch.ToString();
+
+                try
+                {
+                    if (SwitchToLoadNormal)
+                    {
+                        NormalSwitches.Add(CoordSwitchForList, CaseBridgeTemp);
+                    }
+
+                    else
+                    {
+                        StrongSwitches.Add(CoordSwitchForList, CaseBridgeTemp);
                     }
                 }
 
-                else if (BoardList[indexZCase - 1][indexXCase - 1].ToString() == "4")
+                catch
                 {
-                    TempCase = Instantiate(WoodCasePrefab, new Vector3(postionX, IndexY, postionZ), transform.rotation);
-                    CaseBridgeTemp.Add(TempCase);
-                    if (!BridgeOpen)
-                    {
-                        TempCase.SetActive(false);
-                    }
-                }
 
-
-
-
-            }
-
-            string CoordSwitchForList = indexXSwitch.ToString() + "," + indexZSwitch.ToString();
-
-            try
-            {
-                if (SwitchToLoadNormal)
-                {
-                    NormalSwitches.Add(CoordSwitchForList, CaseBridgeTemp);
-                }
-
-                else
-                {
-                    StrongSwitches.Add(CoordSwitchForList, CaseBridgeTemp);
                 }
             }
-
-            catch
-            {
-
-            }
+            
+        }
 
 
-
-
-
+        catch
+        {
 
         }
 
-        /* Load Teleporters */
+        /* Load Teleporter */
+
+        arrivalTeleport = loadedData.arrivalTeleport;
     }
 
+
+    //Call in case of loose
     void LoosingProtocol()
     {
-        Debug.Log("U loose");
         inGame = false;
         CubeGame.SendMessage("Loose");
 
@@ -693,6 +923,8 @@ public class GameScript : MonoBehaviour
 
     }
 
+
+    //Call in case of win
     void WinProtocol()
     {
 
@@ -714,14 +946,13 @@ public class GameScript : MonoBehaviour
 
         sequenceData = JsonUtility.FromJson<SequenceDataEditor>(DataReloadJson);
 
-        if (CurrentProgress.Count == sequenceData.ListLevels.Count)
+        if (CurrentProgress.Count == sequenceData.ListLevels.Count && NameFile == SaveProgress.ListLevels[SaveProgress.ListLevels.Count-1])
         {
             SceneManager.LoadScene("SaveScore", LoadSceneMode.Single);
         }
 
         else
         {
-            Debug.Log("U Win");
             CubeGame.SendMessage("Loose");
 
             WinButtons.SetActive(true);
@@ -732,6 +963,8 @@ public class GameScript : MonoBehaviour
         }
     }
 
+
+    //When data has been loaded, place the cube at the spawn
     void SetSpawnPoint()
     {
         float postionX;
@@ -744,16 +977,21 @@ public class GameScript : MonoBehaviour
         CubeGame.transform.localEulerAngles = new Vector3(0, 0, 0);
     }
 
+
+    //Set timer when user wants to use it
     void UseTimer()
     {
         timerGame = loadedData.timer;
     }
 
+
+    //Go back to menu
     void GoMenu()
     {
         SceneManager.LoadScene("Menu", LoadSceneMode.Single);
     }
 
+    //Clear level and data and restart
     void RestartLevel()
     {
         GameObject[] gameObjects;
@@ -765,7 +1003,7 @@ public class GameScript : MonoBehaviour
             Destroy(gameObjects[i]);
         }
 
-
+        
         inGame = true;
 
         NormalSwitches = new Dictionary<string, List<GameObject>>();
@@ -797,15 +1035,10 @@ public class GameScript : MonoBehaviour
 
     }
 
-    void QuitGame()
-    {
-        Application.Quit();
-    }
 
+    //Clear data and load next level (if exists)
     void NextLevel()
     {
-
-
         GameObject[] gameObjects;
 
         gameObjects = GameObject.FindGameObjectsWithTag("ToDestroy");
@@ -834,10 +1067,18 @@ public class GameScript : MonoBehaviour
 
 
         List<String> CurrentProgress = sequenceData.LevelProgress;
-        
 
-        CurrentProgress.Add(sequenceData.ListLevels[CurrentProgress.Count]);
+        try
+        {
+            CurrentProgress.Add(sequenceData.ListLevels[CurrentProgress.Count]);
+        }
 
+
+        //If progress == listLevels
+        catch
+        {
+
+        }
 
         SequenceDataEditor SaveProgress = new SequenceDataEditor();
         SaveProgress.ListLevels = sequenceData.ListLevels;
@@ -850,8 +1091,28 @@ public class GameScript : MonoBehaviour
 
         File.WriteAllText("Assets\\Levels\\" + sequence + "\\sequenceData.json", SaveProgressString);
 
-        NameFile = CurrentProgress[CurrentProgress.Count - 1];
+        
 
+        try
+        {
+            for (int i = 0; i <= CurrentProgress.Count; i++)
+            {
+                if (CurrentProgress[i] == NameFile)
+                {
+                    NameFile = CurrentProgress[i + 1];
+                    if (i<= CurrentProgress.Count -1)
+                    {
+                        CurrentProgress.RemoveAt(CurrentProgress.Count - 1);
+                    }
+                    break;
+                }
+            }
+        }
+
+        catch
+        {
+            NameFile = CurrentProgress[CurrentProgress.Count - 1];
+        }
 
         TextNameLevel.GetComponentInChildren<Text>().text = NameFile;
 
@@ -864,7 +1125,17 @@ public class GameScript : MonoBehaviour
 
         string readText = File.ReadAllText(CompletePath);
 
-        BoardList = Regex.Split(readText, "\n");
+        BoardListImport = Regex.Split(readText, "\n");
+
+        BoardList.Clear();
+
+        foreach (string TempString in BoardListImport)
+        {
+            if (TempString.Length > 1)
+            {
+                BoardList.Add(TempString);
+            }
+        }
 
         BoardLoaderObject = GameObject.Find("BoardLoader");
         BoardLoaderObject.SendMessage("LoadBoard", CompletePath);
@@ -896,11 +1167,16 @@ public class GameScript : MonoBehaviour
 
     }
 
+
+    //Use to save elements for scores scene
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
     }
 
-
+    void QuitGame()
+    {
+        Application.Quit();
+    }
 
 }

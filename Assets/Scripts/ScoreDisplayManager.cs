@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ScoreDisplayManager : MonoBehaviour {
@@ -15,11 +16,28 @@ public class ScoreDisplayManager : MonoBehaviour {
     private List<string> ListPlayers;
 
     public GameObject TextPrefab;
+    public GameObject ButtonMenu;
 
     public Canvas CanvasTextParent;
 
+    public ScoreDataEditor ScoreDataEditor
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
     // Use this for initialization
     void Start () {
+
+
+        Button ButtonMenuComponent = ButtonMenu.GetComponent<Button>();
+        ButtonMenuComponent.onClick.AddListener(GoMenu);
 
         string DataScoreJson = File.ReadAllText("Assets\\Data\\scores.json");
 
@@ -125,5 +143,11 @@ public class ScoreDisplayManager : MonoBehaviour {
                 break;
             }
         }
+    }
+
+    //Go back to menu
+    void GoMenu()
+    {
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 }

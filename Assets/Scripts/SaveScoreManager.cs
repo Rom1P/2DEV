@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SaveScoreManager : MonoBehaviour {
@@ -15,11 +16,36 @@ public class SaveScoreManager : MonoBehaviour {
     private ScoreDataEditor ScoreDataAccess;
 
     public GameObject ButtonSave;
+    public GameObject ButtonMenu;
 
     public Text NameText;
 
-	// Use this for initialization
-	void Start () {
+    public GameDataEditor GameDataEditor
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
+    public ScoreDataEditor ScoreDataEditor
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
+    // Use this for initialization
+    void Start () {
         try
         {
 
@@ -39,6 +65,9 @@ public class SaveScoreManager : MonoBehaviour {
 
         Button ButtonSaveComponent = ButtonSave.GetComponent<Button>();
         ButtonSaveComponent.onClick.AddListener(SaveData);
+
+        Button ButtonMenuComponent = ButtonMenu.GetComponent<Button>();
+        ButtonMenuComponent.onClick.AddListener(GoMenu);
 
         string DataSaveJson = File.ReadAllText("Assets\\Levels\\" + sequence + "\\sequenceData.json");
 
@@ -105,5 +134,10 @@ public class SaveScoreManager : MonoBehaviour {
 
     }
 
-    
+    //Go back to menu
+    void GoMenu()
+    {
+        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+    }
+
 }

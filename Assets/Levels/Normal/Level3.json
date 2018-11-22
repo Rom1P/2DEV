@@ -1,8 +1,9 @@
 {
     "ListBridges" : [
-      "N1(4,2)-[(2,4);(2,5);(2,6)]"
+      ""
     ],
     "SpawnX":2,
     "SpawnZ":2,
-    "timer" : 70        
+    "timer" : 45,
+    "arrivalTeleport" : ""
   }

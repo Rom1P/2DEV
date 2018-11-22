@@ -41,6 +41,18 @@ public class MenuManager : MonoBehaviour
 
     SequenceDataEditor sequenceData;
 
+    public GameScript GameScript
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
 
     // Use this for initialization
 
@@ -76,7 +88,6 @@ public class MenuManager : MonoBehaviour
 
         catch
         {
-            print("pooezf;zepfze");
             sequence = "Normal";
         }
 
@@ -104,6 +115,7 @@ public class MenuManager : MonoBehaviour
         sequenceData = JsonUtility.FromJson<SequenceDataEditor>(DataJson);
     }
     
+    //Get all levels in Json file
     void LoadAllFiles()
     {
 

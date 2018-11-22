@@ -16,8 +16,20 @@ public class SelectSequenceManager : MonoBehaviour {
 
     public string sequenceSelected;
 
-	// Use this for initialization
-	void Start () {
+    public LevelEditorManager LevelEditorManager
+    {
+        get
+        {
+            throw new System.NotImplementedException();
+        }
+
+        set
+        {
+        }
+    }
+
+    // Use this for initialization
+    void Start () {
 
         Button ButtonCustom1 = Custom1.GetComponent<Button>();
         ButtonCustom1.onClick.AddListener(Select1);
@@ -36,6 +48,9 @@ public class SelectSequenceManager : MonoBehaviour {
 
         Button Clear3Button = Clear3.GetComponent<Button>();
         Clear3Button.onClick.AddListener(ClearSequence3);
+
+        GameObject GameManagerObject = GameObject.Find("MainMenuManager");
+        Destroy(GameManagerObject);
 
     }
 

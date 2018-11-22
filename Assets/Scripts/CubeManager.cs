@@ -64,6 +64,9 @@ public class CubeManager : MonoBehaviour
 
     }
 
+
+    //Those 4 IEnumerator are called on push on a key, makes the cube rotate and send informations to GameScript
+
     IEnumerator RotateRight()
     {
 
